@@ -40,7 +40,7 @@ import { useCookie } from "#app";
 const emit = defineEmits(["callback", "loaded"]);
 
 const userCookie = useCookie("tg_user", {
-  maxAge: 60 * 60 * 24 * 7,
+  maxAge: 60 * 60 * 24,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
 });
