@@ -39,7 +39,7 @@ jobs:
         run: npx nypm@latest i
 
       - name: Prepare For Dev
-        run: npm run prepare:dev
+        run: npm run dev:prepare
 
       - name: Test
         run: npm run test
