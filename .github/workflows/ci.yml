@@ -38,5 +38,8 @@ jobs:
       - name: Install dependencies
         run: npx nypm@latest i
 
+      - name: Prepare For Dev
+        run: npm run prepare:dev
+
       - name: Test
         run: npm run test
