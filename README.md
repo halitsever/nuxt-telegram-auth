@@ -19,8 +19,8 @@
 <img src="https://halitsever-api.vercel.app/api/details"/>
 </a>
 
-- 🧑‍💻 [**Easy Integration**](#) - A telegram bot and this module enough for telegram login widget
-
+- 😌 [**Easy Integration**](#) - A telegram bot and this module enough for telegram login widget
+- 🔒 [**Auth Endpoint**](#) - Nuxt Telegram Module provides a api endpoint for checking is user's cookie valid or not: /api/telegram/session, this method integrated from official <a href="https://gist.github.com/anonymous/6516521b1fb3b464534fbc30ea3573c2">example php code</a>
   <a align="center" >
   <img src="https://halitsever-api.vercel.app/api/installation"/>
   </a>
