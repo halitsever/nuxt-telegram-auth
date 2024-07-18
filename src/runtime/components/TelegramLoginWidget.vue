@@ -1,8 +1,12 @@
 <template>
-  <div id="telegram"></div>
+  <div id="telegram" />
 </template>
 
 <script setup>
+import { onMounted } from "vue";
+import { fetchSession } from "../app/composables/session";
+import { useCookie } from "#app";
+
 const props = defineProps({
   mode: {
     type: String,
@@ -29,13 +33,10 @@ const props = defineProps({
     default: true,
   },
   radius: {
+    default: "0",
     type: String,
   },
 });
-
-import { onMounted } from "vue";
-import { fetchSession } from "../app/composables/session";
-import { useCookie } from "#app";
 
 const emit = defineEmits(["callback", "loaded"]);
 
@@ -56,7 +57,7 @@ function onTelegramAuth(payload) {
 }
 
 onMounted(() => {
-  if (process.client) {
+  if (import.meta.client) {
     const script = document.createElement("script");
     script.async = true;
     script.src = "https://telegram.org/js/telegram-widget.js?3";
