@@ -2,7 +2,7 @@
   <div>
     <div>
       <div v-if="session.loggedIn">
-        <NuxtLink @click="logout" to="/">Logout</NuxtLink>
+        <button @click="logout">Logout</button>
         <a>Hey you are logged in!</a>
         <p>Session: {{ session }}</p>
       </div>

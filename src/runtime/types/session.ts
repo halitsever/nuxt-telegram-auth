@@ -13,6 +13,6 @@ export interface ITelegramSession {
 }
 
 export interface IUserSession {
-  session: ITelegramSession | Ref<{}>;
+  session: ITelegramSession | Ref<null>;
   clearSession: () => Promise<void>;
 }

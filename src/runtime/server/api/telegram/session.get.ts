@@ -32,8 +32,8 @@ export default eventHandler(async (event) => {
         Docs: https://core.telegram.org/widgets/login#checking-authorization
         */
 
-    let dataCheckString = [];
-    for (let key in decodedCookie) if (key != "hash") dataCheckString.push(key + "=" + decodedCookie[key]);
+    const dataCheckString = [];
+    for (const key in decodedCookie) if (key != "hash") dataCheckString.push(key + "=" + decodedCookie[key]);
 
     const check_hash = crypto.createHmac("sha256", secret).update(dataCheckString.sort().join("\n")).digest("hex");
 
