@@ -15,15 +15,15 @@
   </p>
 </p>
 
-<a align="center">
+<p align="center">
 <img src="https://halitsever-api.vercel.app/api/details"/>
-</a>
+</p>
 
 - 😌 [**Easy Integration**](#) - A telegram bot and this module enough for telegram login widget
 - 🔒 [**Auth Endpoint**](#) - Nuxt Telegram Module provides a api endpoint for checking is user's cookie valid or not: /api/telegram/session, this method integrated from official <a href="https://gist.github.com/anonymous/6516521b1fb3b464534fbc30ea3573c2">example php code</a>
-  <a align="center" >
+  <p align="center" >
   <img src="https://halitsever-api.vercel.app/api/installation"/>
-  </a>
+  </p>
 
 Installation:
 
@@ -69,17 +69,17 @@ const testCallback = (user) => {
 
 for more detailed information, please check the documentation page.
 
-<a align="center" href="https://github.com/halitsever/nuxt-telegram-auth/issues">
+<p align="center" href="https://github.com/halitsever/nuxt-telegram-auth/issues">
 <img src="https://halitsever-api.vercel.app/api/issue"/>
-</a>
+</p>
 
-<a align="center">
+<p align="center">
 <img src="https://halitsever-api.vercel.app/api/sponsor"/>
-</a>
+</p>
 
-<a align="center">
+<p align="center">
 <img src="https://halitsever-api.vercel.app/api/license"/>
-</a>
+</p>
 
 <p align="center">
   MIT LICENSE | <a href="https://halit.org">Halit Sever</a>
