@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.3
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.2...v1.2.3)
 
 ## v1.2.2
 
@@ -35,4 +38,3 @@
 ### ❤️ Contributors
 
 - Halit Sever ([@halitsever](http://github.com/halitsever))
-
