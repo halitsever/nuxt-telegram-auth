@@ -19,7 +19,9 @@ export default eventHandler(async (event) => {
 
     if (!session) return handleUnauthorized();
 
-    const decodedCookie = JSON.parse(atob(session));
+    const decodedCookie = JSON.parse(
+      Buffer.from(session, 'base64').toString('utf-8')
+    );
 
     if (Date.now() / 1000 - decodedCookie.auth_date > 86400) return handleUnauthorized();
 

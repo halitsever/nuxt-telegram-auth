@@ -47,7 +47,7 @@ const userCookie = useCookie("tg_user", {
 });
 
 const setCookie = (payload) => {
-  userCookie.value = btoa(JSON.stringify(payload));
+  userCookie.value = btoa(String.fromCharCode(...new TextEncoder("utf-8").encode(JSON.stringify(payload))));
 };
 
 function onTelegramAuth(payload) {
