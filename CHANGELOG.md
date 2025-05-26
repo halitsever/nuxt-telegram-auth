@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.2.6
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.5...v1.2.6)
+
+### 🩹 Fixes
+
+- **session.get:** Handle nullish telegram token ([bb97043](https://github.com/halitsever/nuxt-telegram-auth/commit/bb97043))
+
+### ❤️ Contributors
+
+- Halit Sever ([@halitsever](https://github.com/halitsever))
+
 ## v1.2.5
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.4...v1.2.5)
