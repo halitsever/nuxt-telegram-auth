@@ -1,19 +1,16 @@
 {
   "name": "nuxt-telegram-auth",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "🔐 Telegram login widget integration for Nuxt 3",
   "repository": "https://github.com/halitsever/nuxt-telegram-auth.git",
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "import": "./dist/module.mjs"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/module.mjs",
   "files": [
     "dist"
   ],

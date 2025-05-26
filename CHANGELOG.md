@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.4
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.3...v1.2.4)
+
+### 📖 Documentation
+
+- Update docs workflow ([bd91510](https://github.com/halitsever/nuxt-telegram-auth/commit/bd91510))
+
+### 🏡 Chore
+
+- Upgrade dependency versions ([2765271](https://github.com/halitsever/nuxt-telegram-auth/commit/2765271))
+- Add compatibilityDate to nuxt.config ([6760493](https://github.com/halitsever/nuxt-telegram-auth/commit/6760493))
+
+### ❤️ Contributors
+
+- Halit Sever ([@halitsever](https://github.com/halitsever))
+
 ## v1.2.3
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.2...v1.2.3)
