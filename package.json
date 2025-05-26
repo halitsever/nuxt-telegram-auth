@@ -33,22 +33,22 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.12.3"
+    "@nuxt/kit": "^3.17.4"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^1.3.9",
-    "@nuxt/eslint-config": "^0.3.13",
-    "@nuxt/module-builder": "^0.8.1",
-    "@nuxt/schema": "^3.12.3",
-    "@nuxt/test-utils": "^3.13.1",
-    "@types/node": "^22.7.4",
-    "changelogen": "^0.5.5",
-    "eslint": "^9.6.0",
-    "nuxt": "^3.17.1",
-    "prettier": "^3.3.3",
+    "@nuxt/devtools": "^2.4.1",
+    "@nuxt/eslint-config": "^1.4.1",
+    "@nuxt/module-builder": "^1.0.1",
+    "@nuxt/schema": "^3.17.4",
+    "@nuxt/test-utils": "^3.19.1",
+    "@types/node": "^22.15.21",
+    "changelogen": "^0.6.1",
+    "eslint": "^9.27.0",
+    "nuxt": "^3.17.4",
+    "prettier": "^3.5.3",
     "typescript": "latest",
-    "vitepress": "^1.3.1",
-    "vitest": "^2.1.2",
-    "vue-tsc": "^2.0.24"
+    "vitepress": "^1.6.3",
+    "vitest": "^3.1.4",
+    "vue-tsc": "^2.2.10"
   }
 }
