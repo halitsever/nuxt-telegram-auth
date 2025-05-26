@@ -24,13 +24,20 @@ export default eventHandler(async (event) => {
     if (Date.now() / 1000 - decodedCookie.auth_date > 86400) return handleUnauthorized();
 
     const telegramApiToken = runtimeConfig.TELEGRAM_TOKEN;
+
+    if (!telegramApiToken) return {
+      loggedIn: false,
+      status: 500,
+      body: "Telegram bot token is not configured",
+    };
+
     const secret = crypto.createHash("sha256").update(telegramApiToken).digest();
 
     /*
         This part creates a data-check-string in here as referred in documentation
         and then it checks on the server side if the hash is correct.
         Docs: https://core.telegram.org/widgets/login#checking-authorization
-        */
+    */
 
     const dataCheckString = [];
     for (const key in decodedCookie) if (key != "hash") dataCheckString.push(key + "=" + decodedCookie[key]);
