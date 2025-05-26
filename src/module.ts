@@ -1,8 +1,6 @@
 import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir } from "@nuxt/kit";
 
-export interface ModuleOptions {}
-
-export default defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule({
   meta: {
     name: "nuxt-telegram-auth",
     configKey: "telegramAuth",

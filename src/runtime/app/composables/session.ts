@@ -1,5 +1,5 @@
 import { useAsyncData, useRequestFetch, useState } from "nuxt/app";
-import { type ITelegramSession, type IUserSession } from "../../types/session";
+import type { ITelegramSession, IUserSession } from "../../types/session";
 
 export const useSessionState = () => useState("telegram-session", () => ({}));
 
