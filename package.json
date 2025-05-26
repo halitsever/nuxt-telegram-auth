@@ -1,6 +1,6 @@
 {
   "name": "nuxt-telegram-auth",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "🔐 Telegram login widget integration for Nuxt 3",
   "repository": "https://github.com/halitsever/nuxt-telegram-auth.git",
   "license": "MIT",

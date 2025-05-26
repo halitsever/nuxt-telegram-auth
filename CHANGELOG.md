@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.2.5
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.4...v1.2.5)
+
+### 🩹 Fixes
+
+- Remove module options ([b721fd6](https://github.com/halitsever/nuxt-telegram-auth/commit/b721fd6))
+
+### ❤️ Contributors
+
+- Halit Sever ([@halitsever](https://github.com/halitsever))
+
 ## v1.2.4
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.2.3...v1.2.4)
