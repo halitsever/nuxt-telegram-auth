@@ -1,4 +1,4 @@
-import { useAsyncData, useRequestFetch, useState } from "nuxt/app";
+import { useFetch, useState } from "nuxt/app";
 import type { ITelegramSession, IUserSession } from "../../types/session";
 
 export const useSessionState = () => useState("telegram-session", () => ({}));
@@ -16,6 +16,6 @@ export const clearSession = async () => {
 
 export const fetchSession = async () => {
   const sessionState = useSessionState();
-  const { data } = await useAsyncData<ITelegramSession>("telegram_auth", () => useRequestFetch()("/api/telegram/session"));
-  sessionState.value = data;
+  const { data } = await useFetch<ITelegramSession>("/api/telegram/session");
+  sessionState.value = data.value;
 };
