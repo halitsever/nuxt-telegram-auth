@@ -1,6 +1,5 @@
 import { eventHandler, getCookie } from "h3";
-// @ts-expect-error nitro aliases aren't registered
-import { useRuntimeConfig } from "#internal/nitro";
+import { useRuntimeConfig } from "nitropack/runtime";
 import * as crypto from "node:crypto";
 
 const handleUnauthorized = () => {
