@@ -20,10 +20,10 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
   test:
     runs-on: ubuntu-latest
@@ -36,10 +36,10 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Prepare For Dev
-        run: npm run dev:prepare
+        run: pnpm run dev:prepare
 
       - name: Test
-        run: npm run test
+        run: pnpm run test
