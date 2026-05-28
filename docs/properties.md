@@ -6,7 +6,7 @@ The `<TelegramLoginWidget>` component renders the official Telegram login button
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `telegram-login` | `string` | — | **Required.** Your bot's username (without `@`). |
+| `telegram-login` | `string` | (required) | Your bot's username (without `@`). |
 | `mode` | `'callback' \| 'redirect'` | `'callback'` | `callback` fires `@callback` on the current page. `redirect` sends the user to `redirect-url` after login. |
 | `redirect-url` | `string` | `''` | The URL to redirect to when `mode` is `'redirect'`. |
 | `request-access` | `'read' \| 'write'` | `'read'` | Permission level requested from the user. |
@@ -19,7 +19,7 @@ The `<TelegramLoginWidget>` component renders the official Telegram login button
 | Event | Payload | Description |
 |-------|---------|-------------|
 | `@callback` | `TelegramUser` | Fired after successful login (callback mode only). |
-| `@loaded` | — | Fired when the Telegram widget script has loaded. |
+| `@loaded` | none | Fired when the Telegram widget script has loaded. |
 
 ### Example
 

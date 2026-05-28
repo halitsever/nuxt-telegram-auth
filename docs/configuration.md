@@ -34,7 +34,7 @@ The module auto-imports two server utilities you can use directly inside your se
 
 ### `requireTelegramSession(event)`
 
-Validates the session and returns it. Throws a `401` if the session is missing or invalid — no manual checks needed.
+Validates the session and returns it. Throws a `401` if the session is missing or invalid, no manual checks needed.
 
 ```ts
 // server/api/dashboard.get.ts
@@ -58,4 +58,4 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
-Both utilities are auto-imported — no need to import them manually in your server routes.
+Both utilities are auto-imported, no need to import them manually in your server routes.

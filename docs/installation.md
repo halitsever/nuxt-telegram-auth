@@ -2,13 +2,13 @@
 
 First you need a Telegram bot. If you don't have one, create it via [@BotFather](https://core.telegram.org/bots#how-do-i-create-a-bot).
 
-## Step 1 — Install the module
+## Step 1: Install the module
 
 ```bash
 npx nuxi module add nuxt-telegram-auth
 ```
 
-## Step 2 — Add your bot token
+## Step 2: Add your bot token
 
 Grab your bot token from BotFather:
 
@@ -28,7 +28,7 @@ export default defineNuxtConfig({
 
 <img src="/domain.png" alt="BotFather domain setting" />
 
-## Step 3 — Use the widget
+## Step 3: Use the widget
 
 ```vue
 <template>
@@ -58,4 +58,4 @@ const onLogin = (user) => {
 
 `telegram-login` should be your bot's username (without the `@`).
 
-The `@callback` event is optional — it fires right after the widget returns user data, before the session is validated server-side.
+The `@callback` event is optional. It fires right after the widget returns user data, before the session is validated server-side.
