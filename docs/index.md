@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Nuxt Telegram Auth"
 
-  tagline: 🔐 Telegram login widget integration for Nuxt 3
+  tagline: 🔐 Telegram login widget integration for Nuxt
   actions:
     - theme: brand
       text: Documentation
