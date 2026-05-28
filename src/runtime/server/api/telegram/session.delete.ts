@@ -6,6 +6,6 @@ export default eventHandler(async (event) => {
     return { status: 200, message: "Session Deleted" };
   } catch (err) {
     console.error("Telegram Auth - ", err);
-    return { status: 500, message: "Interval Server Error" };
+    return { status: 500, message: "Internal Server Error" };
   }
 });

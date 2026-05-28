@@ -1,59 +1,61 @@
 # Installation
 
-First of all you need a telegram bot, if you don't know to how to create a telegram bot please check this <a href="https://core.telegram.org/bots#how-do-i-create-a-bot">link</a>.
+First you need a Telegram bot. If you don't have one, create it via [@BotFather](https://core.telegram.org/bots#how-do-i-create-a-bot).
 
-# Step 1:
-
-Install the module:
+## Step 1 — Install the module
 
 ```bash
 npx nuxi module add nuxt-telegram-auth
 ```
 
-# Step 2:
+## Step 2 — Add your bot token
 
-You need grab bot token from telegram, you can get your bot's token from Bot_Father:
-<img src="/telegram-token.png"/>
+Grab your bot token from BotFather:
 
-Then add your nuxt.config.ts file:
+<img src="/telegram-token.png" alt="BotFather token" />
 
-```javascript
-runtimeConfig: {
-  TELEGRAM_TOKEN: "my_fancy_bot_token",
-}
+Then add it to `nuxt.config.ts`:
+
+```ts
+export default defineNuxtConfig({
+  runtimeConfig: {
+    TELEGRAM_TOKEN: 'your_bot_token',
+  },
+})
 ```
 
-also you need allow your domain on Bot_Father otherwise you will get "Invalid Domain" error.
+> **Important:** You also need to allow your domain in BotFather, otherwise you'll get an "Invalid Domain" error.
 
-<img src="/domain.png"/>
+<img src="/domain.png" alt="BotFather domain setting" />
 
-After that you can use `TelegramLoginWidget` component:
+## Step 3 — Use the widget
 
-```javascript
+```vue
 <template>
   <div>
-    <div>
-      <div v-if="session.loggedIn">
-        <NuxtLink @click="logout" to="/">Logout</NuxtLink>
-        <a>Hey you are logged in!</a>
-        <p>Session: {{ session }}</p>
-      </div>
-      <div v-else>
-        <TelegramLoginWidget telegram-login="my_bot" @callback="testCallback" />
-      </div>
+    <div v-if="loading">Loading...</div>
+
+    <div v-else-if="session.loggedIn">
+      <p>Welcome, {{ session.first_name }}!</p>
+      <button @click="clearSession">Logout</button>
+    </div>
+
+    <div v-else>
+      <p v-if="error" style="color: red;">{{ error }}</p>
+      <TelegramLoginWidget telegram-login="my_bot" @callback="onLogin" />
     </div>
   </div>
 </template>
 
 <script setup>
-const { clearSession, session } = useUserSession();
-const logout = () => clearSession();
-const testCallback = (user) => {
-  console.log("Custom callback function: ",user);
-};
+const { session, loading, error, clearSession, refresh } = useUserSession()
+
+const onLogin = (user) => {
+  console.log('Logged in:', user)
+}
 </script>
 ```
 
-`telegram-login` value should be your bot's name.
+`telegram-login` should be your bot's username (without the `@`).
 
-`@callback` emit is optional.
+The `@callback` event is optional — it fires right after the widget returns user data, before the session is validated server-side.

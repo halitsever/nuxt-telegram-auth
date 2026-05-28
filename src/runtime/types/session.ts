@@ -6,6 +6,7 @@ export interface ITelegramSession {
   id?: number;
   message?: string;
   first_name?: string;
+  last_name?: string;
   username?: string;
   photo_url?: string;
   auth_date?: Date;
@@ -14,5 +15,8 @@ export interface ITelegramSession {
 
 export interface IUserSession {
   session: ITelegramSession | Ref<null>;
+  loading: Ref<boolean>;
+  error: Ref<string | null>;
   clearSession: () => Promise<void>;
+  refresh: () => Promise<void>;
 }

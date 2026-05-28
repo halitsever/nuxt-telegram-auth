@@ -1,16 +1,37 @@
-import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir } from "@nuxt/kit";
+import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports } from "@nuxt/kit";
 
-export default defineNuxtModule({
+export interface ModuleOptions {
+  sessionMaxAge?: number;
+}
+
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: "nuxt-telegram-auth",
     configKey: "telegramAuth",
   },
 
-  defaults: {},
-  setup(_options, _nuxt) {
+  defaults: {
+    sessionMaxAge: 60 * 60 * 24, // 24 hours
+  },
+  setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
 
+    nuxt.options.runtimeConfig.telegramAuth = {
+      sessionMaxAge: options.sessionMaxAge ?? 60 * 60 * 24,
+    };
+
     addImportsDir(resolver.resolve("./runtime/app/composables"));
+
+    addServerImports([
+      {
+        name: "getTelegramSession",
+        from: resolver.resolve("runtime/server/utils/telegram"),
+      },
+      {
+        name: "requireTelegramSession",
+        from: resolver.resolve("runtime/server/utils/telegram"),
+      },
+    ]);
 
     addComponent({
       name: "TelegramLoginWidget",

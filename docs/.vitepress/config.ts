@@ -20,6 +20,7 @@ export default defineConfig({
         items: [
           { text: "Quickstart", link: "/installation" },
           { text: "Properties", link: "/properties" },
+          { text: "Configuration", link: "/configuration" },
         ],
       },
     ],
