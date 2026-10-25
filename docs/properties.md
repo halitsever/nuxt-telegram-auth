@@ -2,7 +2,7 @@
 
 ## TelegramLoginWidget
 
-The `<TelegramLoginWidget>` component renders the official Telegram login button. You can use more than one on the same page.
+The `<TelegramLoginWidget>` component renders the official Telegram login button. Telegram draws only one button per bot on a page, so a second widget for the same bot stays empty. To offer both modes, show one widget at a time.
 
 | Prop             | Type                             | Default            | Description                                                                                                                              |
 | ---------------- | -------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
