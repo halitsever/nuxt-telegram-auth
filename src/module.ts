@@ -1,7 +1,7 @@
 import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
 
-export type { ITelegramSession, IUserSession } from "./runtime/types/session";
+export type { ITelegramSession, ITelegramUser, IUserSession } from "./runtime/types/session";
 
 export interface ModuleOptions {
   sessionMaxAge?: number;
@@ -27,7 +27,6 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.TELEGRAM_TOKEN ??= "";
     const telegramAuth = defu(nuxt.options.runtimeConfig.telegramAuth, { botToken: "", sessionMaxAge });
     nuxt.options.runtimeConfig.telegramAuth = telegramAuth;
-    nuxt.options.runtimeConfig.public.telegramAuth = { sessionMaxAge };
 
     const hasBotToken = telegramAuth.botToken || nuxt.options.runtimeConfig.TELEGRAM_TOKEN || process.env.NUXT_TELEGRAM_AUTH_BOT_TOKEN || process.env.NUXT_TELEGRAM_TOKEN;
     if (nuxt.options.dev && !hasBotToken) {

@@ -13,6 +13,16 @@ export interface ITelegramSession {
   hash?: string;
 }
 
+export interface ITelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+  hash: string;
+}
+
 export interface IUserSession {
   session: Ref<ITelegramSession>;
   loading: Readonly<Ref<boolean>>;

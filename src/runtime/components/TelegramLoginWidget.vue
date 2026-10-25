@@ -1,87 +1,84 @@
 <template>
-  <div id="telegram" />
+  <div id="telegram" ref="container" />
 </template>
 
-<script setup>
-import { nextTick, onMounted } from "vue";
-import { fetchSession } from "../app/composables/session";
-import { useCookie, useNuxtApp, useRuntimeConfig } from "#app";
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute } from "#app";
+import { useSessionState } from "../app/composables/session";
+import type { ITelegramSession, ITelegramUser } from "../types/session";
 
-const props = defineProps({
-  mode: {
-    type: String,
-    default: "callback",
+const props = withDefaults(
+  defineProps<{
+    telegramLogin: string;
+    mode?: "callback" | "redirect";
+    redirectUrl?: string;
+    redirectTo?: string;
+    requestAccess?: "write" | "read";
+    size?: "large" | "medium" | "small";
+    userpic?: boolean;
+    radius?: string;
+    lang?: string;
+  }>(),
+  {
+    mode: "callback",
+    redirectUrl: undefined,
+    redirectTo: undefined,
+    requestAccess: undefined,
+    size: "medium",
+    userpic: true,
+    radius: undefined,
+    lang: undefined,
   },
-  telegramLogin: {
-    type: String,
-    required: true,
-  },
-  redirectUrl: {
-    type: String,
-    default: "",
-  },
-  requestAccess: {
-    type: String,
-    default: "read",
-  },
-  size: {
-    type: String,
-    default: "medium",
-  },
-  userpic: {
-    type: Boolean,
-    default: true,
-  },
-  radius: {
-    default: "0",
-    type: String,
-  },
-});
+);
 
-const emit = defineEmits(["callback", "loaded"]);
+const emit = defineEmits<{
+  callback: [user: ITelegramUser];
+  loaded: [];
+}>();
 
-const nuxtApp = useNuxtApp();
+const container = ref<HTMLDivElement>();
+const session = useSessionState();
+const route = useRoute();
+/** The callback lives on window, so its name has to be unique across every Vue app on the page. */
+const callbackName = `__telegramAuth_${Math.random().toString(36).slice(2)}`;
+const callbacks = () => window as unknown as Record<string, unknown>;
 
-const userCookie = useCookie("tg_user", {
-  maxAge: useRuntimeConfig().public.telegramAuth?.sessionMaxAge ?? 60 * 60 * 24,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-});
-
-const setCookie = (payload) => {
-  userCookie.value = btoa(String.fromCharCode(...new TextEncoder("utf-8").encode(JSON.stringify(payload))));
-};
-
-async function onTelegramAuth(payload) {
-  setCookie(payload);
-  /** useCookie writes document.cookie in a pre-flush watcher, so the request has to wait a tick. */
-  await nextTick();
-  emit("callback", payload);
-  await nuxtApp.runWithContext(fetchSession);
+async function onTelegramAuth(user: ITelegramUser) {
+  try {
+    session.value = await $fetch<ITelegramSession>("/api/telegram/session", { method: "POST", body: user });
+  } catch {
+    session.value = { loggedIn: false, status: 401 };
+  }
+  emit("callback", user);
 }
 
 onMounted(() => {
-  if (import.meta.client) {
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://telegram.org/js/telegram-widget.js?22";
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = "https://telegram.org/js/telegram-widget.js?22";
 
-    script.setAttribute("data-telegram-login", props.telegramLogin);
-    script.setAttribute("data-request-access", props.requestAccess);
-    script.setAttribute("data-size", props.size);
-    script.setAttribute("data-userpic", props.userpic);
+  script.setAttribute("data-telegram-login", props.telegramLogin);
+  script.setAttribute("data-size", props.size);
+  script.setAttribute("data-userpic", String(props.userpic));
+  if (props.requestAccess === "write") script.setAttribute("data-request-access", "write");
+  if (props.radius) script.setAttribute("data-radius", props.radius);
+  if (props.lang) script.setAttribute("data-lang", props.lang);
 
-    if (props.radius) script.setAttribute("data-radius", props.radius);
-
-    if (props.mode === "callback") {
-      window.onTelegramAuth = onTelegramAuth;
-      script.setAttribute("data-onauth", "window.onTelegramAuth(user)");
-    } else {
-      script.setAttribute("data-auth-url", props.redirectUrl);
-    }
-
-    document.querySelector("#telegram").appendChild(script);
-    emit("loaded");
+  if (props.mode === "redirect") {
+    script.setAttribute("data-auth-url", props.redirectUrl || `/api/telegram/callback?redirect=${encodeURIComponent(props.redirectTo ?? route.fullPath)}`);
+  } else {
+    if (import.meta.dev && props.mode !== "callback") console.warn(`[nuxt-telegram-auth] Unknown mode "${props.mode}", using "callback".`);
+    callbacks()[callbackName] = onTelegramAuth;
+    script.setAttribute("data-onauth", `window.${callbackName}(user)`);
   }
+
+  script.addEventListener("load", () => emit("loaded"));
+  container.value?.appendChild(script);
+});
+
+onBeforeUnmount(() => {
+  Reflect.deleteProperty(window, callbackName);
+  container.value?.replaceChildren();
 });
 </script>

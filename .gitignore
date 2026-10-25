@@ -58,3 +58,6 @@ Temporary Items
 
 # Vitepress
 /docs/.vitepress/cache 
+
+# Written by @nuxt/test-utils when it loads a fixture
+test/fixtures/**/.nuxtrc
