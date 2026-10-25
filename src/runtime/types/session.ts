@@ -9,14 +9,14 @@ export interface ITelegramSession {
   last_name?: string;
   username?: string;
   photo_url?: string;
-  auth_date?: Date;
+  auth_date?: number;
   hash?: string;
 }
 
 export interface IUserSession {
-  session: ITelegramSession | Ref<null>;
-  loading: Ref<boolean>;
-  error: Ref<string | null>;
+  session: Ref<ITelegramSession>;
+  loading: Readonly<Ref<boolean>>;
+  error: Readonly<Ref<string | null>>;
   clearSession: () => Promise<void>;
   refresh: () => Promise<void>;
 }

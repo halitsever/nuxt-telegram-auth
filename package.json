@@ -8,10 +8,18 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
     }
   },
   "main": "./dist/module.mjs",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/types.d.mts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
@@ -30,6 +38,9 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
+  "peerDependencies": {
+    "nuxt": "^4.0.0"
+  },
   "dependencies": {
     "@nuxt/kit": "^4.4.6"
   },
@@ -44,7 +55,7 @@
     "eslint": "^9.27.0",
     "nuxt": "^4.4.6",
     "prettier": "^3.5.3",
-    "typescript": "latest",
+    "typescript": "~6.0.3",
     "vitepress": "^1.6.3",
     "vitest": "^4.1.7",
     "vue-tsc": "^2.2.10"
