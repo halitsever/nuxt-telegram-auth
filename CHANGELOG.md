@@ -42,7 +42,7 @@
 
 ### ❤️ Contributors
 
-- Halit Sever <halitsever@protonmail.com>
+- Halit Sever ([@halitsever](https://github.com/halitsever))
 
 ## v1.3.7
 
