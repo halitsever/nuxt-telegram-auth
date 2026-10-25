@@ -159,6 +159,43 @@ describe("ssr", async () => {
     });
   });
 
+  describe("GET /api/telegram/callback", () => {
+    const callback = (params: Record<string, string | number>) => {
+      const query = new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)]));
+      return fetch(`/api/telegram/callback?${query}`, { redirect: "manual" });
+    };
+
+    const sessionCookie = (response: Response) => response.headers.getSetCookie().find((value) => value.startsWith("tg_user="));
+
+    it("logs in and redirects to the given path", async () => {
+      const response = await callback({ redirect: "/dashboard", ...signAuthData() });
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe("/dashboard");
+      expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+      expect(sessionCookie(response)).toMatch(/HttpOnly/);
+    });
+
+    it("redirects to the home page when the target is on another site", async () => {
+      const response = await callback({ redirect: "//evil.example", ...signAuthData() });
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe("/");
+    });
+
+    it("keeps numeric fields as numbers in the session", async () => {
+      const response = await callback(signAuthData());
+      const cookie = sessionCookie(response)?.split(";")[0];
+      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", { headers: { Cookie: cookie ?? "" } });
+      expect(result.id).toBe(123456789);
+      expect(result.auth_date).toBeTypeOf("number");
+    });
+
+    it("rejects a login with a bad hash", async () => {
+      const response = await callback({ ...signAuthData(), first_name: "Eve" });
+      expect(response.status).toBe(401);
+      expect(sessionCookie(response)).toBeUndefined();
+    });
+  });
+
   describe("DELETE /api/telegram/session", () => {
     it("returns 200 and clears the session", async () => {
       const result = await $fetch("/api/telegram/session", { method: "DELETE" });

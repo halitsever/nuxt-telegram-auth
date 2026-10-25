@@ -60,5 +60,11 @@ export default defineNuxtModule<ModuleOptions>({
       route: "/api/telegram/session",
       method: "delete",
     });
+
+    addServerHandler({
+      handler: resolver.resolve("runtime/server/api/telegram/callback.get"),
+      route: "/api/telegram/callback",
+      method: "get",
+    });
   },
 });
