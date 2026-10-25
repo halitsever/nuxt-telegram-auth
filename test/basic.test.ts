@@ -1,28 +1,7 @@
 import { fileURLToPath } from "node:url";
-import * as crypto from "node:crypto";
 import { describe, it, expect } from "vitest";
-import { setup, $fetch } from "@nuxt/test-utils/e2e";
-
-const TEST_TOKEN = "test_bot_token_12345";
-
-function createSessionCookie(overrides: Record<string, string | number> = {}) {
-  const userData: Record<string, string | number> = {
-    id: 123456789,
-    first_name: "Test",
-    username: "testuser",
-    auth_date: Math.floor(Date.now() / 1000),
-    ...overrides,
-  };
-
-  const secret = crypto.createHash("sha256").update(TEST_TOKEN).digest();
-  const dataCheckString = Object.keys(userData)
-    .sort()
-    .map((key) => `${key}=${userData[key]}`)
-    .join("\n");
-
-  const hash = crypto.createHmac("sha256", secret).update(dataCheckString).digest("hex");
-  return Buffer.from(JSON.stringify({ ...userData, hash })).toString("base64");
-}
+import { setup, $fetch, fetch } from "@nuxt/test-utils/e2e";
+import { createSessionCookie } from "./utils";
 
 describe("ssr", async () => {
   await setup({
@@ -32,6 +11,20 @@ describe("ssr", async () => {
   it("renders the index page", async () => {
     const html = await $fetch("/");
     expect(html).toContain("<div>basic</div>");
+  });
+
+  describe("useUserSession() during SSR", () => {
+    it("renders the logged out state without a cookie", async () => {
+      const html = await $fetch("/");
+      expect(html).toContain('<p id="session-state">logged out</p>');
+    });
+
+    it("renders the user when the request carries a valid cookie", async () => {
+      const html = await $fetch("/", {
+        headers: { Cookie: `tg_user=${createSessionCookie()}` },
+      });
+      expect(html).toContain('<p id="session-state">logged in as Test</p>');
+    });
   });
 
   describe("GET /api/telegram/session", () => {
@@ -49,6 +42,20 @@ describe("ssr", async () => {
       expect(result.first_name).toBe("Test");
     });
 
+    it("marks the response as private and uncacheable", async () => {
+      const response = await fetch("/api/telegram/session", {
+        headers: { Cookie: `tg_user=${createSessionCookie()}` },
+      });
+      expect(response.headers.get("cache-control")).toBe("private, no-store");
+    });
+
+    it("leaves the hash out of the response", async () => {
+      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
+        headers: { Cookie: `tg_user=${createSessionCookie()}` },
+      });
+      expect(result).not.toHaveProperty("hash");
+    });
+
     it("returns loggedIn: false when hash is invalid", async () => {
       const tampered = Buffer.from(
         JSON.stringify({
@@ -57,7 +64,7 @@ describe("ssr", async () => {
           username: "testuser",
           auth_date: Math.floor(Date.now() / 1000),
           hash: "000000000000000000000000000000000000000000000000000000000000000",
-        })
+        }),
       ).toString("base64");
 
       const result = await $fetch("/api/telegram/session", {

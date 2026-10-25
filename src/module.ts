@@ -16,9 +16,11 @@ export default defineNuxtModule<ModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
 
-    nuxt.options.runtimeConfig.telegramAuth = {
-      sessionMaxAge: options.sessionMaxAge ?? 60 * 60 * 24,
-    };
+    const sessionMaxAge = options.sessionMaxAge ?? 60 * 60 * 24;
+
+    nuxt.options.runtimeConfig.TELEGRAM_TOKEN ??= "";
+    nuxt.options.runtimeConfig.telegramAuth = { sessionMaxAge };
+    nuxt.options.runtimeConfig.public.telegramAuth = { sessionMaxAge };
 
     addImportsDir(resolver.resolve("./runtime/app/composables"));
 

@@ -3,9 +3,9 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { nextTick, onMounted } from "vue";
 import { fetchSession } from "../app/composables/session";
-import { useCookie } from "#app";
+import { useCookie, useNuxtApp, useRuntimeConfig } from "#app";
 
 const props = defineProps({
   mode: {
@@ -40,8 +40,10 @@ const props = defineProps({
 
 const emit = defineEmits(["callback", "loaded"]);
 
+const nuxtApp = useNuxtApp();
+
 const userCookie = useCookie("tg_user", {
-  maxAge: 60 * 60 * 24,
+  maxAge: useRuntimeConfig().public.telegramAuth?.sessionMaxAge ?? 60 * 60 * 24,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
 });
@@ -50,10 +52,12 @@ const setCookie = (payload) => {
   userCookie.value = btoa(String.fromCharCode(...new TextEncoder("utf-8").encode(JSON.stringify(payload))));
 };
 
-function onTelegramAuth(payload) {
+async function onTelegramAuth(payload) {
   setCookie(payload);
-  fetchSession();
+  /** useCookie writes document.cookie in a pre-flush watcher, so the request has to wait a tick. */
+  await nextTick();
   emit("callback", payload);
+  await nuxtApp.runWithContext(fetchSession);
 }
 
 onMounted(() => {
