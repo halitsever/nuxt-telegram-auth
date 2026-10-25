@@ -1,0 +1,38 @@
+# Contributing
+
+Thanks for helping out!
+
+## Setup
+
+You need Node.js 24 (see `.nvmrc`) and pnpm.
+
+```bash
+nvm use
+corepack enable
+pnpm install
+pnpm dev:prepare
+pnpm dev
+```
+
+`pnpm dev` starts the playground in `playground/` with the module loaded from `src/`.
+
+## Checks
+
+Run these before you open a pull request:
+
+```bash
+pnpm lint
+pnpm test:types
+pnpm test
+bash scripts/pack-smoke.sh
+```
+
+`pnpm test` covers the end-to-end tests against the apps in `test/fixtures`, the unit tests in `test/unit` and the component tests in `test/nuxt`. The pack smoke script builds a fresh Nuxt app against the packed module, the way users install it.
+
+## Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org) (`fix:`, `feat:`, `docs:`, `chore:` and so on). The changelog and the version bump are generated from them.
+
+## Releases
+
+Releases run from the **release** workflow in GitHub Actions. Start it with `dry_run` checked first. A real run bumps the version, updates the changelog, publishes to npm with provenance and creates the GitHub release.
