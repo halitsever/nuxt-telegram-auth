@@ -1,0 +1,94 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump (auto reads the commit types)
+        type: choice
+        default: auto
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+      dry_run:
+        description: Run every step but skip publishing and pushing
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          check-latest: true
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prepare For Dev
+        run: pnpm run dev:prepare
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Type check
+        run: pnpm run test:types
+
+      - name: Test
+        run: pnpm run test
+
+      - name: Build an app against the packed module
+        run: bash scripts/pack-smoke.sh
+
+      - name: Bump version and update changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUMP: ${{ inputs.bump }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$BUMP" = "auto" ]; then
+            pnpm exec changelogen --release
+          else
+            pnpm exec changelogen --release "--$BUMP"
+          fi
+
+      - name: Publish to npm
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            npm publish --provenance --dry-run
+          else
+            npm publish --provenance
+          fi
+
+      - name: Push release commit and tag
+        if: ${{ !inputs.dry_run }}
+        run: git push --follow-tags
+
+      - name: Create GitHub release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm exec changelogen gh release

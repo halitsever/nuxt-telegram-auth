@@ -45,7 +45,6 @@
     "dev": "nuxi dev playground --host",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "release": "pnpm run lint && pnpm run prettier && pnpm run test && pnpm run prepack && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint .",
     "prettier": "prettier --write .",
     "test": "vitest run",
