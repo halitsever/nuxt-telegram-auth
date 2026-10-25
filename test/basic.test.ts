@@ -83,12 +83,33 @@ describe("ssr", async () => {
       expect(result.loggedIn).toBe(false);
       expect(result.status).toBe(401);
     });
+
+    it("returns loggedIn: false when auth_date is missing", async () => {
+      const result = await $fetch("/api/telegram/session", {
+        headers: { Cookie: `tg_user=${createSessionCookie({ auth_date: undefined })}` },
+      });
+      expect(result.loggedIn).toBe(false);
+    });
+
+    it("reads names outside the Latin-1 range", async () => {
+      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
+        headers: { Cookie: `tg_user=${createSessionCookie({ first_name: "Ünal 🚀" })}` },
+      });
+      expect(result.first_name).toBe("Ünal 🚀");
+    });
   });
 
   describe("DELETE /api/telegram/session", () => {
     it("returns 200 and clears the session", async () => {
       const result = await $fetch("/api/telegram/session", { method: "DELETE" });
       expect(result.status).toBe(200);
+    });
+
+    it("expires the session cookie for the whole site", async () => {
+      const response = await fetch("/api/telegram/session", { method: "DELETE" });
+      const cookie = response.headers.getSetCookie().find((value) => value.startsWith("tg_user="));
+      expect(cookie).toMatch(/Max-Age=0/);
+      expect(cookie).toMatch(/Path=\//);
     });
   });
 });
