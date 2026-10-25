@@ -7,7 +7,8 @@ import { encodeAuthCookie, verifyTelegramAuthData, type TelegramAuthData } from 
 export const SESSION_COOKIE = "tg_user";
 
 export function getBotToken(event: H3Event): string {
-  const botToken = useRuntimeConfig(event).TELEGRAM_TOKEN;
+  const config = useRuntimeConfig(event);
+  const botToken = config.telegramAuth?.botToken || config.TELEGRAM_TOKEN;
   if (!botToken) throw createError({ statusCode: 500, statusMessage: "Internal Server Error" });
   return String(botToken);
 }

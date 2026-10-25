@@ -58,7 +58,8 @@
     "nuxt": "^4.0.0"
   },
   "dependencies": {
-    "@nuxt/kit": "^4.4.6"
+    "@nuxt/kit": "^4.4.6",
+    "defu": "^6.1.7"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.17.0",

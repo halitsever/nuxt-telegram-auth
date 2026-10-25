@@ -1,4 +1,5 @@
-import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports } from "@nuxt/kit";
+import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, useLogger } from "@nuxt/kit";
+import { defu } from "defu";
 
 export interface ModuleOptions {
   sessionMaxAge?: number;
@@ -22,8 +23,14 @@ export default defineNuxtModule<ModuleOptions>({
     const sessionMaxAge = options.sessionMaxAge ?? 60 * 60 * 24;
 
     nuxt.options.runtimeConfig.TELEGRAM_TOKEN ??= "";
-    nuxt.options.runtimeConfig.telegramAuth = { sessionMaxAge };
+    const telegramAuth = defu(nuxt.options.runtimeConfig.telegramAuth, { botToken: "", sessionMaxAge });
+    nuxt.options.runtimeConfig.telegramAuth = telegramAuth;
     nuxt.options.runtimeConfig.public.telegramAuth = { sessionMaxAge };
+
+    const hasBotToken = telegramAuth.botToken || nuxt.options.runtimeConfig.TELEGRAM_TOKEN || process.env.NUXT_TELEGRAM_AUTH_BOT_TOKEN || process.env.NUXT_TELEGRAM_TOKEN;
+    if (nuxt.options.dev && !hasBotToken) {
+      useLogger("nuxt-telegram-auth").warn("No Telegram bot token found. Set NUXT_TELEGRAM_AUTH_BOT_TOKEN in your .env file.");
+    }
 
     addImportsDir(resolver.resolve("./runtime/app/composables"));
 
