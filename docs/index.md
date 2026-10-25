@@ -23,7 +23,7 @@ features:
 
   - icon: 🔒
     title: Actually secure
-    details: HMAC-SHA256 verification on the server, timing-safe hash comparison, configurable session TTL. Follows Telegram's official spec.
+    details: The server checks Telegram's HMAC-SHA256 signature with a timing-safe comparison and keeps the login in an HttpOnly cookie. Follows Telegram's official spec.
 
   - icon: 🛡️
     title: Protect routes without the config mess
@@ -39,5 +39,5 @@ features:
 
   - icon: 📘
     title: TypeScript out of the box
-    details: Everything is typed. Session data, composable return values, server utils. Your IDE will thank you.
+    details: Everything is typed, from session data to composable return values and server utils. Import the types straight from nuxt-telegram-auth.
 ---

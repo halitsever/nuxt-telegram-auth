@@ -3,7 +3,7 @@ import { defineConfig } from "vitepress";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Nuxt Telegram Auth",
-  description: "Effortlessly integrate the Telegram login widget into your Nuxt 3 application with our easy-to-use npm package, enhancing user authentication and engagement.",
+  description: "Telegram login widget integration for Nuxt, with sessions checked on the server.",
 
   base: "/nuxt-telegram-auth/",
 
@@ -21,6 +21,7 @@ export default defineConfig({
           { text: "Quickstart", link: "/installation" },
           { text: "Properties", link: "/properties" },
           { text: "Configuration", link: "/configuration" },
+          { text: "Redirect mode", link: "/redirect-mode" },
         ],
       },
     ],
