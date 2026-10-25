@@ -1,6 +1,8 @@
 import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
 
+export type { ITelegramSession, IUserSession } from "./runtime/types/session";
+
 export interface ModuleOptions {
   sessionMaxAge?: number;
 }
