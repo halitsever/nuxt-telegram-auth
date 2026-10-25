@@ -67,11 +67,16 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ "$BUMP" = "auto" ]; then
-            pnpm exec changelogen --release
-          else
-            pnpm exec changelogen --release "--$BUMP"
-          fi
+
+          # The token only resolves contributor names; --no-github keeps changelogen from publishing a release by itself.
+          args=(--release --no-github)
+          if [ "$BUMP" != "auto" ]; then args+=("--$BUMP"); fi
+          pnpm exec changelogen "${args[@]}"
+
+          # changelogen logs its errors but still exits 0, so check that the commit and tag really landed on HEAD.
+          version="$(node -p "require('./package.json').version")"
+          test "$(git log -1 --format=%s)" = "chore(release): v$version"
+          test "$(git rev-parse "v$version^{commit}")" = "$(git rev-parse HEAD)"
 
       - name: Publish to npm
         env:
