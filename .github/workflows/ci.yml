@@ -45,3 +45,30 @@ jobs:
 
       - name: Test
         run: pnpm run test
+
+  pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prepare For Dev
+        run: pnpm run dev:prepare
+
+      - name: Pack
+        run: pnpm pack --pack-destination "$RUNNER_TEMP"
+
+      - name: Build an app against the packed module
+        run: |
+          cp -r test/fixtures/packed "$RUNNER_TEMP/app"
+          cd "$RUNNER_TEMP/app"
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/nuxt-telegram-auth-*.tgz nuxt@^4
+          npx nuxi build
