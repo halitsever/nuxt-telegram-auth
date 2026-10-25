@@ -14,11 +14,13 @@
 
 ### ❤️ Contributors
 
-- Halit Sever <halitsever@protonmail.com>
+- Halit Sever ([@halitsever](https://github.com/halitsever))
 
 ## v1.3.6
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.3.5...v1.3.6)
+
+This version was published without the fixes from #265 and still has the 1.3.5 build failure. Use 1.3.7 or later.
 
 ## v1.2.6
 

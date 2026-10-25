@@ -8,6 +8,9 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: "nuxt-telegram-auth",
     configKey: "telegramAuth",
+    compatibility: {
+      nuxt: ">=4.0.0",
+    },
   },
 
   defaults: {

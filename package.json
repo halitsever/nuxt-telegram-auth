@@ -2,15 +2,31 @@
   "name": "nuxt-telegram-auth",
   "version": "1.3.7",
   "description": "🔐 Telegram login widget integration for Nuxt",
-  "repository": "https://github.com/halitsever/nuxt-telegram-auth.git",
+  "keywords": [
+    "nuxt",
+    "nuxt-module",
+    "telegram",
+    "telegram-login",
+    "login-widget",
+    "auth",
+    "authentication"
+  ],
+  "homepage": "https://halitsever.github.io/nuxt-telegram-auth/",
+  "bugs": "https://github.com/halitsever/nuxt-telegram-auth/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halitsever/nuxt-telegram-auth.git"
+  },
   "license": "MIT",
+  "author": "Halit Sever (https://halit.org)",
   "packageManager": "pnpm@10.28.2",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "./dist/module.mjs",
   "typesVersions": {
@@ -21,14 +37,14 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/runtime/server/tsconfig.json"
   ],
   "scripts": {
     "prepack": "nuxt-module-build build",
     "dev": "nuxi dev playground --host",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "release": "pnpm run lint && pnpm run prettier && pnpm run test && pnpm run prepack && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint .",
     "prettier": "prettier --write .",
     "test": "vitest run",
@@ -45,19 +61,18 @@
     "@nuxt/kit": "^4.4.6"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^4.0.0-alpha.4",
-    "@nuxt/eslint-config": "^1.4.1",
-    "@nuxt/module-builder": "^1.0.2",
-    "@nuxt/schema": "^4.4.6",
-    "@nuxt/test-utils": "^4.0.3",
-    "@types/node": "^22.15.21",
+    "@nuxt/eslint-config": "^1.17.0",
+    "@nuxt/module-builder": "^1.0.3",
+    "@nuxt/schema": "^4.6.2",
+    "@nuxt/test-utils": "^4.3.4",
+    "@types/node": "^24.19.2",
     "changelogen": "^0.6.1",
-    "eslint": "^9.27.0",
-    "nuxt": "^4.4.6",
-    "prettier": "^3.5.3",
+    "eslint": "^10.13.0",
+    "nuxt": "^4.6.2",
+    "prettier": "^3.9.10",
     "typescript": "~6.0.3",
     "vitepress": "^1.6.3",
-    "vitest": "^4.1.7",
-    "vue-tsc": "^2.2.10"
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
   }
 }

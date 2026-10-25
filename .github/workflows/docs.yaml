@@ -1,17 +1,16 @@
-# Sample workflow for building and deploying a VitePress site to GitHub Pages
-#
 name: Deploy VitePress site to Pages
 
 on:
   push:
     branches: [main]
+    paths:
+      - docs/**
+      - .github/workflows/docs.yaml
 
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -22,25 +21,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v4
+        uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Install dependencies
         run: pnpm install
       - name: Build with VitePress
-        run: |
-          pnpm run docs:build
-          touch docs/.vitepress/dist/.nojekyll
+        run: pnpm run docs:build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/.vitepress/dist
 
@@ -51,7 +46,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     name: Deploy
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
