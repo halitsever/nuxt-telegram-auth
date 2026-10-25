@@ -1,5 +1,49 @@
 # Changelog
 
+## v1.4.0
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.3.7...v1.4.0)
+
+### 🚀 Enhancements
+
+- Set the session cookie on the server ([8adf055](https://github.com/halitsever/nuxt-telegram-auth/commit/8adf055))
+- Add a callback route for redirect mode ([143a37a](https://github.com/halitsever/nuxt-telegram-auth/commit/143a37a))
+- Read the bot token from telegramAuth.botToken ([aff186c](https://github.com/halitsever/nuxt-telegram-auth/commit/aff186c))
+- Export session types from the module entry ([35f60ca](https://github.com/halitsever/nuxt-telegram-auth/commit/35f60ca))
+- **widget:** Send logins to the server and add lang and redirect-to props ([c6ea92a](https://github.com/halitsever/nuxt-telegram-auth/commit/c6ea92a))
+
+### 🩹 Fixes
+
+- Verify telegram data with web crypto ([f98533a](https://github.com/halitsever/nuxt-telegram-auth/commit/f98533a))
+
+### 📖 Documentation
+
+- Note that 1.3.6 shipped without the fixes ([db7f810](https://github.com/halitsever/nuxt-telegram-auth/commit/db7f810))
+- Update readme for the server-side session ([390d3ac](https://github.com/halitsever/nuxt-telegram-auth/commit/390d3ac))
+- Document the bot token, sessions and redirect mode ([a736890](https://github.com/halitsever/nuxt-telegram-auth/commit/a736890))
+- Add a security policy and contributing guide ([724b1fc](https://github.com/halitsever/nuxt-telegram-auth/commit/724b1fc))
+
+### 🏡 Chore
+
+- Set up pnpm workspace and drop stale lockfiles ([4b4e6fc](https://github.com/halitsever/nuxt-telegram-auth/commit/4b4e6fc))
+- Upgrade dev dependencies ([8c86339](https://github.com/halitsever/nuxt-telegram-auth/commit/8c86339))
+- Add package metadata and nuxt compatibility ([71063b3](https://github.com/halitsever/nuxt-telegram-auth/commit/71063b3))
+- Group dependabot updates ([3226296](https://github.com/halitsever/nuxt-telegram-auth/commit/3226296))
+- Ignore major typescript and node types updates in dependabot ([ef2b540](https://github.com/halitsever/nuxt-telegram-auth/commit/ef2b540))
+- Move pnpm settings into pnpm-workspace.yaml ([bb9cafe](https://github.com/halitsever/nuxt-telegram-auth/commit/bb9cafe))
+- Add issue and pull request templates ([f562019](https://github.com/halitsever/nuxt-telegram-auth/commit/f562019))
+
+### 🤖 CI
+
+- Run type checks and tests on node 22, 24 and 26 ([ceb86b8](https://github.com/halitsever/nuxt-telegram-auth/commit/ceb86b8))
+- Publish releases from github actions ([a8d730b](https://github.com/halitsever/nuxt-telegram-auth/commit/a8d730b))
+- Update docs workflow ([350c379](https://github.com/halitsever/nuxt-telegram-auth/commit/350c379))
+- Keep changelogen from creating github releases on its own ([d7ee03a](https://github.com/halitsever/nuxt-telegram-auth/commit/d7ee03a))
+
+### ❤️ Contributors
+
+- Halit Sever <halitsever@protonmail.com>
+
 ## v1.3.7
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.3.6...v1.3.7)
