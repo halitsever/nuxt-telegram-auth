@@ -4,7 +4,7 @@
 <img src="https://halitsever-api.vercel.app/api/repo-title?title=Nuxt%20Telegram%20Auth">
 
 <p align="center">
-🔐 A telegram login widget integration for nuxt 3
+🔐 A Telegram login widget integration for Nuxt
 <br>
 <br/>
 <br/>
@@ -19,8 +19,10 @@
 <img src="https://halitsever-api.vercel.app/api/details"/>
 </p>
 
-- 😌 [**Easy Integration**](#) - A telegram bot and this module enough for telegram login widget
-- 🔒 [**Auth Endpoint**](#) - Nuxt Telegram Module provides a api endpoint for checking is user's cookie valid or not: /api/telegram/session, this method integrated from official <a href="https://gist.github.com/anonymous/6516521b1fb3b464534fbc30ea3573c2">example php code</a>
+- 😌 [**Easy Integration**](#) - A Telegram bot and this module are all you need for the login widget
+- 🔒 [**Secure Sessions**](#) - The server checks Telegram's signature as described in the <a href="https://core.telegram.org/widgets/login-legacy">official docs</a> and keeps the login in an HttpOnly cookie
+- 🔁 [**Redirect Mode**](#) - Logins can also come back through a redirect, handled by `/api/telegram/callback`
+- 🛡️ [**Server Utilities**](#) - `requireTelegramSession(event)` protects your own API routes
   <p align="center" >
   <img src="https://halitsever-api.vercel.app/api/installation"/>
   </p>
@@ -31,43 +33,32 @@ Installation:
 npx nuxi module add nuxt-telegram-auth
 ```
 
-Then you need add TELEGRAM_TOKEN to your runtimeConfig:
+Then add your bot token to `.env`:
 
-```javascript
-runtimeConfig: {
-  TELEGRAM_TOKEN: "my_fancy_bot_token",
-}
+```bash
+NUXT_TELEGRAM_AUTH_BOT_TOKEN=123456:your_bot_token
 ```
 
-after that you can try on a page:
+Your site's domain also has to be set for the bot in [@BotFather](https://t.me/BotFather) with `/setdomain`.
 
-```javascript
+After that you can try it on a page:
 
+```vue
 <template>
-  <div>
-    <div>
-      <div v-if="session.loggedIn">
-        <NuxtLink @click="logout" to="/">Logout</NuxtLink>
-        <a>Hey you are logged in!</a>
-        <p>Session: {{ session }}</p>
-      </div>
-      <div v-else>
-        <TelegramLoginWidget telegram-login="my_bot" @callback="testCallback" />
-      </div>
-    </div>
+  <div v-if="session.loggedIn">
+    <p>Hey {{ session.first_name }}, you are logged in!</p>
+    <button @click="clearSession">Logout</button>
   </div>
+  <TelegramLoginWidget v-else telegram-login="my_bot" @callback="onLogin" />
 </template>
 
 <script setup>
-const { clearSession, session } = useUserSession();
-const logout = () => clearSession();
-const testCallback = (user) => {
-  console.log("Custom callback function: ",user);
-};
+const { session, clearSession } = useUserSession();
+const onLogin = (user) => console.log("Logged in as", user.username);
 </script>
 ```
 
-for more detailed information, please check the documentation page.
+See the [documentation](https://halitsever.github.io/nuxt-telegram-auth) for redirect mode, server utilities and every option.
 
 <p align="center" href="https://github.com/halitsever/nuxt-telegram-auth/issues">
 <img src="https://halitsever-api.vercel.app/api/issue"/>

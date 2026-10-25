@@ -1,0 +1,46 @@
+name: Bug report
+description: Something doesn't work the way the docs say it should
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps to reproduce, or a link to a minimal repository or StackBlitz.
+    validations:
+      required: true
+  - type: input
+    id: module-version
+    attributes:
+      label: nuxt-telegram-auth version
+      placeholder: 1.4.0
+    validations:
+      required: true
+  - type: input
+    id: nuxt-version
+    attributes:
+      label: Nuxt version
+      placeholder: 4.6.2
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Widget mode
+      options:
+        - callback
+        - redirect
+        - not using the widget
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Browser console or server output, if there is any.
+      render: shell
