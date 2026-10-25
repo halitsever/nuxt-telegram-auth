@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.3.7
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.3.6...v1.3.7)
+
+### 🩹 Fixes
+
+- Restore session composable and widget broken in 1.3.5 ([f4ac782](https://github.com/halitsever/nuxt-telegram-auth/commit/f4ac782))
+
+### 🤖 CI
+
+- Build an app against the packed module ([8835083](https://github.com/halitsever/nuxt-telegram-auth/commit/8835083))
+
+### ❤️ Contributors
+
+- Halit Sever <halitsever@protonmail.com>
+
 ## v1.3.6
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.3.5...v1.3.6)
