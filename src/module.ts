@@ -50,6 +50,12 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     addServerHandler({
+      handler: resolver.resolve("runtime/server/api/telegram/session.post"),
+      route: "/api/telegram/session",
+      method: "post",
+    });
+
+    addServerHandler({
       handler: resolver.resolve("runtime/server/api/telegram/session.delete"),
       route: "/api/telegram/session",
       method: "delete",

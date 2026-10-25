@@ -1,24 +1,18 @@
 import { getCookie, createError } from "h3";
-import { useRuntimeConfig } from "nitropack/runtime";
 import type { H3Event } from "h3";
 import type { ITelegramSession } from "../../types/session";
+import { getBotToken, getSessionMaxAge, SESSION_COOKIE } from "../lib/session";
 import { decodeAuthCookie, verifyTelegramAuthData } from "../lib/verify";
 
 // Validates the tg_user cookie and returns the session, or null if invalid/missing.
 export async function getTelegramSession(event: H3Event): Promise<ITelegramSession | null> {
-  const cookie = getCookie(event, "tg_user");
+  const cookie = getCookie(event, SESSION_COOKIE);
   const data = cookie ? decodeAuthCookie(cookie) : null;
   if (!data) return null;
 
-  const runtimeConfig = useRuntimeConfig(event);
-  const sessionMaxAge = runtimeConfig.telegramAuth?.sessionMaxAge ?? 86400;
+  if (Date.now() / 1000 - Number(data.auth_date) > getSessionMaxAge(event)) return null;
 
-  if (Date.now() / 1000 - Number(data.auth_date) > sessionMaxAge) return null;
-
-  const telegramApiToken = runtimeConfig.TELEGRAM_TOKEN;
-  if (!telegramApiToken) throw createError({ statusCode: 500, statusMessage: "Internal Server Error" });
-
-  if (!(await verifyTelegramAuthData(data, String(telegramApiToken)))) return null;
+  if (!(await verifyTelegramAuthData(data, getBotToken(event)))) return null;
 
   return { loggedIn: true, status: 200, ...data } as unknown as ITelegramSession;
 }

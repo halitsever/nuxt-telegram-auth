@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
-import { setup, $fetch, fetch } from "@nuxt/test-utils/e2e";
-import { createSessionCookie } from "./utils";
+import { setup, $fetch, fetch, url } from "@nuxt/test-utils/e2e";
+import { createSessionCookie, signAuthData } from "./utils";
 
 describe("ssr", async () => {
   await setup({
@@ -96,6 +96,66 @@ describe("ssr", async () => {
         headers: { Cookie: `tg_user=${createSessionCookie({ first_name: "Ünal 🚀" })}` },
       });
       expect(result.first_name).toBe("Ünal 🚀");
+    });
+  });
+
+  describe("POST /api/telegram/session", () => {
+    const post = (body: unknown, headers: Record<string, string> = {}) =>
+      fetch("/api/telegram/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...headers },
+        body: typeof body === "string" ? body : JSON.stringify(body),
+      });
+
+    const sessionCookie = (response: Response) => response.headers.getSetCookie().find((value) => value.startsWith("tg_user="));
+
+    it("sets an HttpOnly session cookie for a valid login", async () => {
+      const response = await post(signAuthData());
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body).toMatchObject({ loggedIn: true, first_name: "Test" });
+      expect(body).not.toHaveProperty("hash");
+      expect(sessionCookie(response)).toMatch(/HttpOnly/);
+      expect(sessionCookie(response)).toMatch(/SameSite=Lax/);
+      expect(sessionCookie(response)).toMatch(/Path=\//);
+    });
+
+    it("creates a session that GET can read back", async () => {
+      const response = await post(signAuthData({ first_name: "Ünal 🚀" }));
+      const cookie = sessionCookie(response)?.split(";")[0];
+      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", { headers: { Cookie: cookie ?? "" } });
+      expect(result).toMatchObject({ loggedIn: true, first_name: "Ünal 🚀" });
+    });
+
+    it("rejects a login with a bad hash", async () => {
+      const response = await post({ ...signAuthData(), first_name: "Eve" });
+      expect(response.status).toBe(401);
+      expect(sessionCookie(response)).toBeUndefined();
+    });
+
+    it("rejects a login older than sessionMaxAge", async () => {
+      const response = await post(signAuthData({ auth_date: Math.floor(Date.now() / 1000) - 86401 }));
+      expect(response.status).toBe(401);
+      expect(sessionCookie(response)).toBeUndefined();
+    });
+
+    it("rejects requests from another site", async () => {
+      expect((await post(signAuthData(), { Origin: "https://evil.example" })).status).toBe(403);
+      expect((await post(signAuthData(), { "Sec-Fetch-Site": "cross-site" })).status).toBe(403);
+    });
+
+    it("accepts requests from the same site", async () => {
+      const sameSite: Record<string, string>[] = [{ Origin: new URL(url("/")).origin }, { "Sec-Fetch-Site": "same-origin" }];
+      for (const headers of sameSite) {
+        const response = await post(signAuthData(), headers);
+        expect(response.status).toBe(200);
+        expect(await response.json()).toMatchObject({ loggedIn: true });
+      }
+    });
+
+    it("rejects bodies that are not JSON", async () => {
+      const response = await post("id=1", { "Content-Type": "application/x-www-form-urlencoded" });
+      expect(response.status).toBe(415);
     });
   });
 
