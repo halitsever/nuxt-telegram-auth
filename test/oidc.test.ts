@@ -81,10 +81,11 @@ describe("Telegram Login with the OIDC redirect", async () => {
     expect(await hookCalls()).toContainEqual(expect.objectContaining({ hook: "error", provider: "oidc", code: "invalid_state" }));
   });
 
-  it("sends a provider error to the login page", async () => {
+  it("sends a provider error to the login page and drops the transaction", async () => {
     const begun = await start();
     const res = await callback({ error: "access_denied", state: begun.location.searchParams.get("state")! }, begun.cookie);
     expect(res.headers.get("location")).toBe("/login?telegram_error=provider_error");
+    expect(findSetCookie(res, "nuxt-telegram-auth-oidc")).toMatch(/^nuxt-telegram-auth-oidc=; Max-Age=0; Path=\//);
   });
 
   it("sends a failed token exchange to the login page", async () => {

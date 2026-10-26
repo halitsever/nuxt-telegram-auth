@@ -45,6 +45,6 @@ The old widget keeps working for bots that haven't switched. When you're ready:
 
 1. Replace `<TelegramLoginWidget>` with [`<TelegramLoginButton>`](/telegram-login#telegramloginbutton) and set the client ID (and the client secret, for the redirect login).
 2. In BotFather, turn on the bot's Login Widget and fill in Allowed URLs.
-3. Deploy both changes together. Once the bot uses Telegram Login, Telegram shows "Bot domain invalid" in the old widget everywhere.
+3. Deploy both changes together. Once the bot uses Telegram Login, Telegram shows "Bot domain invalid" in the old widget everywhere. BotFather has no obvious setting to turn Telegram Login off again, so plan for a one-way switch.
 
 Users keep their accounts: `user.id` is Telegram's numeric user id with both methods. In development the old widget warns when a client ID is configured, since that usually means the bot has already switched.

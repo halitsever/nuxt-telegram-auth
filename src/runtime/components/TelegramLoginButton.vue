@@ -1,5 +1,5 @@
 <template>
-  <button type="button" class="tg-auth-button" :data-style="dataStyle" :disabled="mode === 'popup' && !ready" @click="onClick">
+  <button type="button" class="tg-auth-button" :data-style="dataStyle" :disabled="mode === 'popup' && !ready && !error" @click="onClick">
     <slot>Log in with Telegram</slot>
   </button>
 </template>
@@ -32,7 +32,8 @@ const emit = defineEmits<{
   error: [code: TelegramLoginErrorCode];
 }>();
 
-const { ready, login } = useTelegramLogin({
+// After an error the button stays clickable, so a click can retry a failed SDK load.
+const { ready, error, login } = useTelegramLogin({
   scope: props.scope,
   lang: props.lang,
   mode: props.mode,

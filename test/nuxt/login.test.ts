@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h } from "vue";
 import { mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
-import { readBody } from "h3";
+import { readBody, setResponseStatus } from "h3";
 import { useRoute } from "#app";
 import { setTelegramSessionState, useTelegramSession } from "../../src/runtime/app/composables/session";
 import { useTelegramLogin, type UseTelegramLoginOptions } from "../../src/runtime/app/composables/login";
@@ -26,6 +26,18 @@ async function mountLogin(options: UseTelegramLoginOptions = {}) {
   );
   unmounts.push(() => wrapper.unmount());
   return api;
+}
+
+/** The next nonce request answers 500. It returns instead of throwing, because test-utils only drops a `once` handler that returns. */
+function failNextNonce() {
+  registerEndpoint("/api/telegram/nonce", {
+    method: "POST",
+    once: true,
+    handler: (event) => {
+      setResponseStatus(event, 500);
+      return { error: "offline" };
+    },
+  });
 }
 
 beforeEach(() => {
@@ -170,6 +182,33 @@ describe("useTelegramLogin", () => {
     await vi.waitFor(() => expect(login.ready.value).toBe(true));
     fake.callback!({ id_token: "token-3" });
     await vi.waitFor(() => expect(useTelegramSession().user.value).toEqual(ada));
+  });
+
+  it("reports sdk_load_failed when the next nonce can't be fetched", async () => {
+    const fake = installFakeSdk();
+    const login = await mountLogin();
+    await vi.waitFor(() => expect(login.ready.value).toBe(true));
+    failNextNonce();
+    login.login();
+    fake.callback!({ error: "popup_closed" });
+    await vi.waitFor(() => expect(login.error.value).toBe("sdk_load_failed"));
+    expect(login.ready.value).toBe(false);
+  });
+
+  it("starts over on the next login() after a failed nonce refresh", async () => {
+    const fake = installFakeSdk();
+    const login = await mountLogin();
+    await vi.waitFor(() => expect(login.ready.value).toBe(true));
+    failNextNonce();
+    login.login();
+    fake.callback!({ error: "popup_closed" });
+    await vi.waitFor(() => expect(login.error.value).toBe("sdk_load_failed"));
+
+    // The popup can't open yet, but this call fetches a new nonce.
+    login.login();
+    await vi.waitFor(() => expect(login.ready.value).toBe(true));
+    login.login();
+    expect(fake.opens).toBe(2);
   });
 
   it("reports not_configured and stays not ready without a client id", async () => {

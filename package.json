@@ -54,6 +54,9 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
   "peerDependencies": {
     "nuxt": ">=4.6.0"
   },

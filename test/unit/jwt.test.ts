@@ -58,6 +58,10 @@ describe("verifyIdToken", () => {
     await expect(verify(unsigned({ alg, kid: "oidc-1" }))).rejects.toMatchObject({ code: "unsupported_algorithm", message: expect.stringContaining("Switch the bot to RS256 or ES256") });
   });
 
+  it.each(["exp", "iat"])("rejects a token without %s", async (claim) => {
+    await expect(verify(await sign(rsa, { [claim]: undefined }))).rejects.toMatchObject({ code: "verification_failed" });
+  });
+
   it("rejects a nonce mismatch", async () => {
     await expect(verify(await sign(rsa), "other")).rejects.toMatchObject({ code: "verification_failed" });
   });

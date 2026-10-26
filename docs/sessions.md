@@ -94,7 +94,7 @@ A refused login answers `403` to the popup and sends redirect logins to the logi
 ## Cookies and secrets
 
 - The session is sealed with `NUXT_APP_SECRET`, or with `NUXT_TELEGRAM_AUTH_SESSION_PASSWORD` if you set one. Either must be at least 32 characters. Changing it logs everyone out.
-- The cookie is `HttpOnly`, `Secure` and `SameSite=Lax`. Browsers treat `localhost` as secure, so local development over HTTP works. To test from another device on your network over plain HTTP, set `telegramAuth.session.cookie.secure` to `false` in development.
+- The cookie is `HttpOnly`, `Secure` and `SameSite=Lax`. Chrome and Firefox accept `Secure` cookies on `http://localhost`, Safari doesn't. Test through an HTTPS tunnel, or set `telegramAuth.session.cookie.secure` to `false` in development.
 - A session lasts `session.maxAge` from the login, however often it is read.
 - Browsers drop cookies over 4096 bytes. Keep `session.data` small: an id and a role are fine, a whole profile is not. In development the module warns when the cookie gets close.
 - Telegram's tokens are checked once and thrown away; the cookie never holds them.

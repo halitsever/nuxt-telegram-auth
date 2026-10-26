@@ -99,6 +99,13 @@ describe("TelegramLoginButton", () => {
     await vi.waitFor(() => expect(wrapper.emitted("error")).toEqual([["popup_closed"]]));
   });
 
+  it("reports a failed SDK load and lets a click try again", async () => {
+    delete (window as TelegramWindow).Telegram;
+    const wrapper = await mountButton();
+    await vi.waitFor(() => expect(wrapper.emitted("error")).toEqual([["sdk_load_failed"]]));
+    expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+  });
+
   it("renders custom slot content", async () => {
     const wrapper = await mountButton({ slots: { default: "Continue with Telegram" } });
     expect(wrapper.find("button").text()).toBe("Continue with Telegram");
