@@ -24,6 +24,8 @@ export interface TelegramSdk {
 /** A useTelegramLogin instance, as the page-level manager sees it. */
 export interface LoginConsumer {
   onResult(result: TelegramSdkResult): Promise<void>;
+  /** The SDK can't take a login now, e.g. no new nonce came after the last one. */
+  onUnavailable(): void;
 }
 
 const telegramWindow = () => window as unknown as { Telegram?: { Login?: TelegramSdk } };
@@ -140,7 +142,9 @@ async function dispatch(result: TelegramSdkResult): Promise<void> {
     else if (result.id_token) await loginWithIdToken(result.id_token).catch(() => {});
   } finally {
     // Only after the token was posted: a new nonce cookie would otherwise replace the one it needs.
-    await prepare().catch(() => {});
+    await prepare().catch(() => {
+      for (const consumer of consumers) consumer.onUnavailable();
+    });
   }
 }
 

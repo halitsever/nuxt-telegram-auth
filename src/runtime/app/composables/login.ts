@@ -61,6 +61,7 @@ export function useTelegramLogin(options: UseTelegramLoginOptions = {}): UseTele
         fail(errorCodeOf(cause));
       }
     },
+    onUnavailable: () => fail("sdk_load_failed"),
   };
 
   let disconnect: (() => void) | undefined;
@@ -89,7 +90,11 @@ export function useTelegramLogin(options: UseTelegramLoginOptions = {}): UseTele
     pending.value = true;
     const outcome = openTelegramSdk(consumer, scope, options.lang);
     if (outcome === "blocked") fail("popup_blocked");
-    else if (outcome === "unavailable") fail("sdk_load_failed");
+    else if (outcome === "unavailable") {
+      fail("sdk_load_failed");
+      // The popup can't wait for this, but the next click can use it.
+      prepareTelegramSdk(clientId).catch(() => {});
+    }
   }
 
   return {
