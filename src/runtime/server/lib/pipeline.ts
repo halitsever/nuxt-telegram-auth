@@ -28,7 +28,14 @@ export async function completeLogin(event: RequestEvent, login: VerifiedLogin, o
   }
 }
 
+/** Errors the error hook already saw, so a caller that rethrows one can report it again safely. */
+const reported = new WeakSet<object>();
+
 export async function reportLoginError(event: RequestEvent, provider: TelegramProvider | "session", error: unknown): Promise<void> {
+  if (typeof error === "object" && error !== null) {
+    if (reported.has(error)) return;
+    reported.add(error);
+  }
   try {
     await useServerHooks().callHook("telegram-auth:error", { event, provider, error });
   } catch (hookError) {

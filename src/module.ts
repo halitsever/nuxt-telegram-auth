@@ -141,5 +141,17 @@ export default defineNuxtModule<ModuleOptions>({
       route: "/api/telegram/callback",
       method: "get",
     });
+
+    addServerHandler({
+      handler: resolver.resolve("runtime/server/routes/auth/telegram.get"),
+      route: "/auth/telegram",
+      method: "get",
+    });
+
+    addServerHandler({
+      handler: resolver.resolve("runtime/server/routes/auth/telegram-callback.get"),
+      route: "/auth/telegram/callback",
+      method: "get",
+    });
   },
 });
