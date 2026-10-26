@@ -7,6 +7,8 @@
 - **Nuxt 4.6 or newer.** 1.x stays available for older apps.
 - **A session secret in production.** Set `NUXT_APP_SECRET` (at least 32 characters, e.g. `openssl rand -base64 32`) or `NUXT_TELEGRAM_AUTH_SESSION_PASSWORD`.
 
+The tests also run on Nuxt 4.6 with `future.compatibilityVersion: 5`. Nuxt 5 itself, with Nitro v3, isn't tested yet.
+
 ## What changes
 
 **The session cookie.** The unsealed `tg_user` cookie is replaced by the sealed `nuxt-telegram-auth` cookie. A valid `tg_user` is converted on the user's next visit and then deleted, and the new session ends when the old one would have. Turn this off with `compat.migrateLegacyCookie: false`.

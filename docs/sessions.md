@@ -71,14 +71,16 @@ Hooks let your app react to logins without touching the module. Register them in
 // server/plugins/telegram.ts
 import { createError, useServerHooks } from "nuxt/server";
 
-export default defineNitroPlugin(() => {
+export default () => {
   useServerHooks().hook("telegram-auth:login", async ({ user, session }) => {
     const account = await db.users.upsert({ telegramId: user.id, name: user.first_name });
     if (account.banned) throw createError({ status: 403 });
     session.data.role = account.role;
   });
-});
+};
 ```
+
+The plugin is a plain function, so it also works with `compatibilityVersion: 5`, where Nitro's auto-imports such as `defineNitroPlugin` are off.
 
 | Hook                    | Context                                      | When                                                                                             |
 | ----------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
