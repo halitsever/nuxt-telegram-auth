@@ -11,9 +11,8 @@ Both end in the same session, so you can mix them. [Quickstart](/installation) s
 
 Telegram only sends the user back to addresses on the bot's **Allowed URLs** list. Add:
 
-- your site's origin, such as `https://example.com`
+- your site's origin, such as `https://example.com`, which covers popup logins on every page
 - `https://example.com/auth/telegram/callback` for the redirect login
-- every page that shows a popup login button, because the popup reports the page's own address
 
 For local development, a tunnel such as `cloudflared tunnel --url http://localhost:3000` gives you a public HTTPS address to add to the list.
 
@@ -23,7 +22,7 @@ For local development, a tunnel such as `cloudflared tunnel --url http://localho
 <TelegramLoginButton :scope="['phone']" variant="outlined" @success="onLogin" @error="onError" />
 ```
 
-The button uses Telegram's own styling. It stays disabled until Telegram's script has loaded.
+The button uses Telegram's own styling. It stays disabled until Telegram's script has loaded and your server has handed out a nonce. If either fails, the button reports `sdk_load_failed` and a click tries again.
 
 | Prop          | Type                                                    | Default   | Description                                                                                                                 |
 | ------------- | ------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -95,7 +94,7 @@ If the login fails, the user lands on your [login page](/pages) with `?telegram_
 | `popup_closed`          | The user closed the popup.                                                                                     |
 | `popup_blocked`         | The browser blocked the popup.                                                                                 |
 | `sdk_load_failed`       | Telegram's script didn't load.                                                                                 |
-| `not_configured`        | The client ID (or, for the redirect login, the client secret) is missing.                                      |
+| `not_configured`        | The client ID is missing. A missing client secret makes `/auth/telegram` answer 500 with a message instead.    |
 | `verification_failed`   | The token from Telegram didn't pass the server's checks.                                                       |
 | `unsupported_algorithm` | The bot signs tokens with EdDSA or ES256K. Switch it to RS256 or ES256 in BotFather → Login Widget → Advanced. |
 | `expired`               | The login took too long or was already used. Start again.                                                      |

@@ -23,7 +23,7 @@ NUXT_APP_SECRET=your-secret-of-at-least-32-characters
 
 Open the [@BotFather](https://t.me/BotFather) Mini App, pick your bot and go to **Bot Settings → Login Widget** (some versions call it **Web Login**). There you:
 
-1. Add your site to **Allowed URLs**: the origin (`https://example.com`), the callback `https://example.com/auth/telegram/callback`, and every page that shows a login button.
+1. Add your site to **Allowed URLs**: the origin (`https://example.com`) and the callback `https://example.com/auth/telegram/callback`.
 2. Copy the **Client ID** and the **Client Secret**.
 
 Then put them in `.env`:
@@ -36,7 +36,7 @@ NUXT_TELEGRAM_AUTH_CLIENT_SECRET=your_client_secret
 The client ID is your bot's numeric id, the part of the bot token before the colon. The secret is only needed for the [redirect login](/telegram-login#redirect-login); keep it out of git.
 
 ::: warning
-Once a bot uses Telegram Login, Telegram's old login widget stops working for it on every domain. If your site still uses `<TelegramLoginWidget>`, switch the bot and your code in the same deploy. See [Migrating from 1.x](/migration).
+Once a bot uses Telegram Login, Telegram's old login widget stops working for it on every domain, and BotFather has no obvious way to turn Telegram Login off again. If your site still uses `<TelegramLoginWidget>`, switch the bot and your code in the same deploy. See [Migrating from 1.x](/migration).
 :::
 
 ## Step 4: Add a login button
