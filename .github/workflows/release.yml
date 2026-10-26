@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       bump:
-        description: Version bump (auto reads the commit types)
+        description: Version bump (auto reads the commit types; premajor starts a beta line, prerelease adds the next beta)
         type: choice
         default: auto
         options:
@@ -12,6 +12,24 @@ on:
           - patch
           - minor
           - major
+          - premajor
+          - prerelease
+      preid:
+        description: Prerelease name for premajor and prerelease
+        type: string
+        default: beta
+      dist_tag:
+        description: npm dist-tag (latest from main, next for betas from v2, v1 for 1.x fixes from v1)
+        type: choice
+        default: latest
+        options:
+          - latest
+          - next
+          - v1
+      from:
+        description: Tag the changelog starts from, e.g. the last 1.x tag for 2.0.0 (empty means the previous tag)
+        type: string
+        default: ""
       dry_run:
         description: Run every step but skip publishing and pushing
         type: boolean
@@ -27,10 +45,30 @@ concurrency:
 
 jobs:
   release:
-    if: github.ref == 'refs/heads/main'
+    if: contains(fromJSON('["refs/heads/main", "refs/heads/v2", "refs/heads/v1"]'), github.ref)
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check the inputs fit the branch
+        env:
+          BRANCH: ${{ github.ref_name }}
+          BUMP: ${{ inputs.bump }}
+          DIST_TAG: ${{ inputs.dist_tag }}
+        run: |
+          fail() { echo "::error::$1"; exit 1; }
+          prerelease=false
+          if [ "$BUMP" = "premajor" ] || [ "$BUMP" = "prerelease" ]; then prerelease=true; fi
+          case "$BRANCH" in
+            v2)
+              [ "$prerelease" = true ] || fail "Releases from v2 are betas: use bump premajor for the first one, prerelease after that."
+              [ "$DIST_TAG" = "next" ] || fail "Betas from v2 go out under the next tag."
+              ;;
+            v1)
+              [ "$prerelease" = false ] || fail "v1 only gets fixes, no prereleases."
+              [ "$DIST_TAG" = "v1" ] || fail "Releases from v1 go out under the v1 tag, so they don't replace latest."
+              ;;
+          esac
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -64,13 +102,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BUMP: ${{ inputs.bump }}
+          PREID: ${{ inputs.preid }}
+          FROM: ${{ inputs.from }}
+          DIST_TAG: ${{ inputs.dist_tag }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # The token only resolves contributor names; --no-github keeps changelogen from publishing a release by itself.
           args=(--release --no-github)
-          if [ "$BUMP" != "auto" ]; then args+=("--$BUMP"); fi
+          case "$BUMP" in
+            auto) ;;
+            premajor | prerelease) args+=("--$BUMP" "$PREID") ;;
+            *) args+=("--$BUMP") ;;
+          esac
+          if [ -n "$FROM" ]; then args+=(--from "$FROM"); fi
           pnpm exec changelogen "${args[@]}"
 
           # changelogen logs its errors but still exits 0, so check that the commit and tag really landed on HEAD.
@@ -78,14 +124,21 @@ jobs:
           test "$(git log -1 --format=%s)" = "chore(release): v$version"
           test "$(git rev-parse "v$version^{commit}")" = "$(git rev-parse HEAD)"
 
+          # A prerelease under latest would become what everyone installs.
+          if [[ "$version" == *-* ]] && [ "$DIST_TAG" = "latest" ]; then
+            echo "::error::$version is a prerelease; publish it under next, not latest."
+            exit 1
+          fi"
+
       - name: Publish to npm
         env:
           DRY_RUN: ${{ inputs.dry_run }}
+          DIST_TAG: ${{ inputs.dist_tag }}
         run: |
           if [ "$DRY_RUN" = "true" ]; then
-            npm publish --provenance --dry-run
+            npm publish --provenance --tag "$DIST_TAG" --dry-run
           else
-            npm publish --provenance
+            npm publish --provenance --tag "$DIST_TAG"
           fi
 
       - name: Push release commit and tag
@@ -96,4 +149,9 @@ jobs:
         if: ${{ !inputs.dry_run }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm exec changelogen gh release
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm exec changelogen gh release
+          # changelogen doesn't flag prereleases on GitHub.
+          version="$(node -p "require('./package.json').version")"
+          if [[ "$version" == *-* ]]; then gh release edit "v$version" --prerelease; fi
