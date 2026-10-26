@@ -4,7 +4,7 @@ import { DEFAULT_LOGIN_PATH, DEFAULT_REDIRECT_AFTER_LOGIN, DEFAULT_SESSION_MAX_A
 import type { RawTelegramConfig } from "./runtime/server/lib/config";
 import { collectConfigWarnings } from "./warnings";
 
-export type { TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser, TelegramWidgetUser } from "./runtime/shared/types";
+export type { TelegramButtonStyle, TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser, TelegramWidgetUser } from "./runtime/shared/types";
 export type { TelegramErrorHookContext, TelegramLoginHookContext, TelegramLogoutHookContext, TelegramSessionHookContext } from "./runtime/server/hooks";
 
 export interface ModuleOptions {
@@ -119,6 +119,11 @@ export default defineNuxtModule<ModuleOptions>({
     addComponent({
       name: "TelegramLoginWidget",
       filePath: resolver.resolve("runtime/components/TelegramLoginWidget.vue"),
+    });
+
+    addComponent({
+      name: "TelegramLoginButton",
+      filePath: resolver.resolve("runtime/components/TelegramLoginButton.vue"),
     });
 
     addServerHandler({

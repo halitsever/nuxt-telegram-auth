@@ -37,6 +37,9 @@ export interface TelegramSession {
 
 export type TelegramSessionResponse = ({ loggedIn: true } & TelegramSession) | { loggedIn: false };
 
+/** The looks telegram-login.js knows, matched against the button's `data-style`. */
+export type TelegramButtonStyle = "square" | "outlined" | "icon" | "shine";
+
 export type TelegramLoginErrorCode =
   | "popup_closed"
   | "popup_blocked"

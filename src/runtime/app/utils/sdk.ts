@@ -170,6 +170,11 @@ export function openTelegramSdk(consumer: LoginConsumer, scope: string[], lang?:
   return "opened";
 }
 
+/** Runs `init` again so the SDK also decorates buttons that mounted after the first one. */
+export function refreshTelegramSdkButtons(): void {
+  if (current) current.sdk.init(current.options, dispatch);
+}
+
 /** Forgets the SDK, its nonce and its listeners. */
 export function resetTelegramSdk(): void {
   generation++;

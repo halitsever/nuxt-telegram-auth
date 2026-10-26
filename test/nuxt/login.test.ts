@@ -2,42 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h } from "vue";
 import { mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
 import { readBody } from "h3";
-import { useRoute, useRuntimeConfig } from "#app";
+import { useRoute } from "#app";
 import { setTelegramSessionState, useTelegramSession } from "../../src/runtime/app/composables/session";
 import { useTelegramLogin, type UseTelegramLoginOptions } from "../../src/runtime/app/composables/login";
-import { resetTelegramSdk, TELEGRAM_SDK_URL, type TelegramSdkOptions, type TelegramSdkResult } from "../../src/runtime/app/utils/sdk";
+import { resetTelegramSdk, TELEGRAM_SDK_URL } from "../../src/runtime/app/utils/sdk";
+import { installFakeSdk, telegramConfig, type TelegramWindow } from "./fake-sdk";
 
-interface FakeSdk {
-  inits: TelegramSdkOptions[];
-  opens: number;
-  callback?: (result: TelegramSdkResult) => void;
-  openImpl?: () => void;
-  init(options: TelegramSdkOptions, callback: (result: TelegramSdkResult) => void): void;
-  open(): void;
-  auth: ReturnType<typeof vi.fn>;
-}
-
-type TelegramWindow = { Telegram?: { Login?: unknown } };
-
-function installFakeSdk(): FakeSdk {
-  const fake: FakeSdk = {
-    inits: [],
-    opens: 0,
-    init(options, callback) {
-      fake.inits.push(options);
-      fake.callback = callback;
-    },
-    open() {
-      fake.opens++;
-      fake.openImpl?.();
-    },
-    auth: vi.fn(),
-  };
-  (window as TelegramWindow).Telegram = { Login: fake };
-  return fake;
-}
-
-const telegramConfig = () => useRuntimeConfig().public.telegramAuth as { clientId: string };
 const ada = { id: 987654321, first_name: "Ada" };
 
 let issued: string[] = [];
