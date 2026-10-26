@@ -55,11 +55,12 @@
     "docs:preview": "vitepress preview docs"
   },
   "peerDependencies": {
-    "nuxt": "^4.0.0"
+    "nuxt": ">=4.6.0"
   },
   "dependencies": {
-    "@nuxt/kit": "^4.4.6",
-    "defu": "^6.1.7"
+    "@nuxt/kit": "^4.6.2",
+    "defu": "^6.1.7",
+    "jose": "^6.2.13"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.17.0",

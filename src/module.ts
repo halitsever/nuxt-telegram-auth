@@ -1,7 +1,7 @@
 import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
 
-export type { ITelegramSession, ITelegramUser, IUserSession } from "./runtime/types/session";
+export type { TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser } from "./runtime/shared/types";
 
 export interface ModuleOptions {
   sessionMaxAge?: number;
@@ -12,7 +12,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: "nuxt-telegram-auth",
     configKey: "telegramAuth",
     compatibility: {
-      nuxt: ">=4.0.0",
+      nuxt: ">=4.6.0",
     },
   },
 

@@ -79,4 +79,11 @@ describe("safeRedirect", () => {
   ])("%j redirects to %j", (input, expected) => {
     expect(safeRedirect(input)).toBe(expected);
   });
+
+  it.each([
+    ["//evil.example", "/home"],
+    ["/a", "/a"],
+  ])("%j with fallback /home redirects to %j", (input, expected) => {
+    expect(safeRedirect(input, "/home")).toBe(expected);
+  });
 });

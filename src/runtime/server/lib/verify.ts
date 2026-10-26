@@ -42,13 +42,4 @@ export function decodeAuthCookie(value: string): TelegramAuthData | null {
   }
 }
 
-/** Keeps redirects on the current origin, so a crafted `redirect` can't send the user elsewhere. */
-export function safeRedirect(target: unknown): string {
-  if (typeof target !== "string" || !target.startsWith("/")) return "/";
-  try {
-    const url = new URL(target, "http://localhost");
-    return url.origin === "http://localhost" ? url.pathname + url.search + url.hash : "/";
-  } catch {
-    return "/";
-  }
-}
+export { safeRedirect } from "../../shared/redirect";
