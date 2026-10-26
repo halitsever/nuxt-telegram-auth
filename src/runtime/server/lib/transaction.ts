@@ -7,7 +7,7 @@ const TRANSACTION_MAX_AGE = 10 * 60;
 const NONCE_COOKIE = "nuxt-telegram-auth-nonce";
 const NONCE_MAX_AGE = 5 * 60;
 
-/** What the redirect login needs to finish on the callback. Lives in a SameSite=Lax cookie, so Telegram's redirect back carries it. */
+/** What the redirect login needs to finish on the callback. */
 export interface OidcTransaction {
   state: string;
   verifier: string;
@@ -15,7 +15,8 @@ export interface OidcTransaction {
   redirect: string;
 }
 
-const transactionCookie = (event: RequestEvent) => openSealedCookie<OidcTransaction>(event, { name: TRANSACTION_COOKIE, maxAge: TRANSACTION_MAX_AGE });
+// Telegram's redirect back is a cross-site navigation, so a Strict cookie would never come along, whatever session.cookie says.
+const transactionCookie = (event: RequestEvent) => openSealedCookie<OidcTransaction>(event, { name: TRANSACTION_COOKIE, maxAge: TRANSACTION_MAX_AGE, cookie: { sameSite: "lax" } });
 const nonceCookie = (event: RequestEvent) => openSealedCookie<string>(event, { name: NONCE_COOKIE, maxAge: NONCE_MAX_AGE });
 
 export async function startOidcTransaction(event: RequestEvent, redirect: string): Promise<OidcTransaction> {

@@ -1,83 +1,58 @@
 # Configuration
 
-## Bot token
+## Environment
 
-The module reads the bot token from runtime config, so each environment can use its own token without a rebuild:
+Secrets and per-environment values come from runtime config, so one build works everywhere:
 
-```bash
-# .env
-NUXT_TELEGRAM_AUTH_BOT_TOKEN=123456:your_bot_token
-```
+| Variable                              | Needed for                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------ |
+| `NUXT_APP_SECRET`                     | Sealing sessions in production (at least 32 characters).                       |
+| `NUXT_PUBLIC_TELEGRAM_AUTH_CLIENT_ID` | Telegram Login. Your bot's numeric id.                                         |
+| `NUXT_TELEGRAM_AUTH_CLIENT_SECRET`    | The redirect login only.                                                       |
+| `NUXT_TELEGRAM_AUTH_BOT_TOKEN`        | The old [login widget](/properties) only.                                      |
+| `NUXT_TELEGRAM_AUTH_SESSION_PASSWORD` | Optional. Seals sessions instead of a secret derived from `NUXT_APP_SECRET`.   |
+| `NUXT_TELEGRAM_AUTH_REDIRECT_URL`     | Optional. The full callback URL, when the one built from the request is wrong. |
 
-You can also set `runtimeConfig.telegramAuth.botToken` in `nuxt.config.ts`, for example from another environment variable. The older `runtimeConfig.TELEGRAM_TOKEN` key (`NUXT_TELEGRAM_TOKEN`) still works.
-
-In development the module prints a warning when it can't find a token.
+In development the module warns about missing or mismatched values, such as a client ID that belongs to a different bot than the bot token.
 
 ## Module options
 
-Module options are set under the `telegramAuth` key in `nuxt.config.ts`.
+Set these under `telegramAuth` in `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
   telegramAuth: {
-    sessionMaxAge: 60 * 60 * 24, // 24 hours (default)
+    session: { maxAge: 60 * 60 * 24 * 7 },
+    scope: ["phone"],
+    loginPath: "/login",
   },
 });
 ```
 
-### `sessionMaxAge`
+| Option                       | Default                | Description                                                                                                                                  |
+| ---------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `session.name`               | `'nuxt-telegram-auth'` | Cookie name.                                                                                                                                 |
+| `session.maxAge`             | `86400`                | Session length in seconds, counted from the login.                                                                                           |
+| `session.cookie`             | `{}`                   | Changes to the cookie's `HttpOnly`, `Secure`, `SameSite=Lax` defaults, e.g. `{ secure: false }` for testing over plain HTTP on your network. |
+| `scope`                      | `[]`                   | Adds `'phone'` or `'write'`. Profile data is always requested, because the user id comes with it.                                            |
+| `loginPath`                  | `'/login'`             | See [Page protection](/pages).                                                                                                               |
+| `redirectAfterLogin`         | `'/'`                  | See [Page protection](/pages).                                                                                                               |
+| `protectAll`                 | `false`                | See [Page protection](/pages).                                                                                                               |
+| `compat.useUserSession`      | `true`                 | Registers the deprecated 1.x composable.                                                                                                     |
+| `compat.migrateLegacyCookie` | `true`                 | Converts a valid 1.x `tg_user` cookie into a session.                                                                                        |
+| `sessionMaxAge`              |                        | Deprecated name of `session.maxAge`.                                                                                                         |
 
-- **Type:** `number`
-- **Default:** `86400` (24 hours)
-- **Unit:** seconds
+## Routes
 
-How long a Telegram session stays valid after `auth_date`. Once this window passes, the server returns `401` and the user must log in again. The cookie expires at the same time.
+| Route                          | Description                                               |
+| ------------------------------ | --------------------------------------------------------- |
+| `GET /api/telegram/session`    | The current session, or `{ loggedIn: false }`.            |
+| `DELETE /api/telegram/session` | Logs out.                                                 |
+| `POST /api/telegram/nonce`     | Starts a popup login.                                     |
+| `POST /api/telegram/sdk`       | Finishes a popup login with the `id_token` from Telegram. |
+| `GET /auth/telegram`           | Starts the redirect login.                                |
+| `GET /auth/telegram/callback`  | Finishes the redirect login.                              |
+| `POST /api/telegram/session`   | Logs in with the old widget.                              |
+| `GET /api/telegram/callback`   | Finishes an old widget login in redirect mode.            |
 
-```ts
-telegramAuth: {
-  sessionMaxAge: 60 * 60 * 24 * 7, // 7 days
-}
-```
-
----
-
-## How sessions work
-
-- The widget posts the login data to `POST /api/telegram/session`. The server checks Telegram's signature with your bot token and rejects logins older than `sessionMaxAge`.
-- A valid login is stored in the `tg_user` cookie. The cookie is `HttpOnly` and `SameSite=Lax`, so scripts on the page can't read it.
-- In production the cookie is also `Secure`, so your site needs HTTPS. Browsers treat `localhost` as secure, which means local testing works over plain HTTP.
-- The server only accepts logins posted from your own site. Requests from other sites get `403`.
-- `GET /api/telegram/session` checks the signature again on every request. Its response has `Cache-Control: private, no-store`, so a cache never serves one visitor's session to another.
-- `DELETE /api/telegram/session` removes the cookie.
-
-## Protecting Server Routes
-
-The module auto-imports two server utilities you can use directly inside your server routes:
-
-### `requireTelegramSession(event)`
-
-Validates the session and returns it. Throws a `401` if the session is missing or invalid, no manual checks needed.
-
-```ts
-// server/api/dashboard.get.ts
-export default defineEventHandler(async (event) => {
-  const session = await requireTelegramSession(event);
-  // session is typed as ITelegramSession
-  return { user: session.first_name };
-});
-```
-
-### `getTelegramSession(event)`
-
-Like `requireTelegramSession`, but returns `null` instead of throwing when there's no valid session. Useful when auth is optional.
-
-```ts
-// server/api/profile.get.ts
-export default defineEventHandler(async (event) => {
-  const session = await getTelegramSession(event);
-  if (!session) return { guest: true };
-  return { user: session.first_name };
-});
-```
-
-Both utilities are auto-imported, no need to import them manually in your server routes.
+Every answer carries `Cache-Control: private, no-store`, so a cache never hands one visitor's session to another. The login routes accept only JSON from your own site.

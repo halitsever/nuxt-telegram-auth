@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { $fetch, fetch, setup, url } from "@nuxt/test-utils/e2e";
 import { mockProviderEnv, startMockProvider } from "./support/oidc-provider";
-import { toCookieHeader } from "./utils";
+import { findSetCookie, toCookieHeader } from "./utils";
 
 describe("Telegram Login with the OIDC redirect", async () => {
   const mock = await startMockProvider();
@@ -44,6 +44,12 @@ describe("Telegram Login with the OIDC redirect", async () => {
     expect(location.searchParams.get("nonce")).toMatch(/^[\w-]{43}$/);
     expect(location.searchParams.get("scope")).toBe("openid profile");
     expect(location.searchParams.get("redirect_uri")).toBe(`${new URL(url("/")).origin}/auth/telegram/callback`);
+  });
+
+  it("keeps the transaction cookie SameSite=Lax when the session cookie is Strict", async () => {
+    const { res } = await start();
+    // Telegram's redirect back is a cross-site navigation, which never carries a Strict cookie.
+    expect(findSetCookie(res, "nuxt-telegram-auth-oidc")).toMatch(/SameSite=Lax/);
   });
 
   it("builds the redirect URI from X-Forwarded-Host and X-Forwarded-Proto", async () => {

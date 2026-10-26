@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes go into the latest release only, so please check that you're on it before reporting.
+2.x gets security fixes. 1.x gets fixes for critical security problems for six months after 2.0.0 is released. Please check that you're on the latest release of your line before reporting.
 
 ## Reporting a vulnerability
 
