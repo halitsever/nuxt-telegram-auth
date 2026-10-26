@@ -37,6 +37,8 @@ export async function verifyIdToken(idToken: string, options: { config: Telegram
       issuer: config.oidc.issuer,
       audience: config.clientId,
       algorithms: ["RS256", "ES256"],
+      // jose checks exp and iat only when present; a token without them would never expire.
+      requiredClaims: ["exp", "iat"],
       // Telegram's tokens live 30 seconds; this covers a server clock that is off by as much.
       clockTolerance: 30,
     });
