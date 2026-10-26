@@ -1,10 +1,28 @@
 import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
+import { DEFAULT_LOGIN_PATH, DEFAULT_REDIRECT_AFTER_LOGIN, DEFAULT_SESSION_MAX_AGE, DEFAULT_SESSION_NAME, TELEGRAM_OIDC } from "./runtime/shared/defaults";
+import type { RawTelegramConfig } from "./runtime/server/lib/config";
+import { collectConfigWarnings } from "./warnings";
 
 export type { TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser } from "./runtime/shared/types";
 
 export interface ModuleOptions {
+  session?: {
+    /** Cookie name. */
+    name?: string;
+    /** Seconds. */
+    maxAge?: number;
+    /** Applied over the HttpOnly, Secure and SameSite=Lax defaults, e.g. `secure: false` to test over plain HTTP on a LAN. */
+    cookie?: { domain?: string; secure?: boolean; sameSite?: "lax" | "strict" | "none" };
+  };
+  /** @deprecated Use `session.maxAge`. */
   sessionMaxAge?: number;
+  /** `profile` is always requested; this adds more. */
+  scope?: ("phone" | "write")[];
+  loginPath?: string;
+  redirectAfterLogin?: string;
+  protectAll?: boolean;
+  compat?: { useUserSession?: boolean; migrateLegacyCookie?: boolean };
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -17,20 +35,42 @@ export default defineNuxtModule<ModuleOptions>({
   },
 
   defaults: {
-    sessionMaxAge: 60 * 60 * 24, // 24 hours
+    scope: [],
+    loginPath: DEFAULT_LOGIN_PATH,
+    redirectAfterLogin: DEFAULT_REDIRECT_AFTER_LOGIN,
+    protectAll: false,
+    compat: { useUserSession: true, migrateLegacyCookie: true },
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
 
-    const sessionMaxAge = options.sessionMaxAge ?? 60 * 60 * 24;
-
+    // Every key needs a default: Nitro only applies env overrides to keys that exist.
     nuxt.options.runtimeConfig.TELEGRAM_TOKEN ??= "";
-    const telegramAuth = defu(nuxt.options.runtimeConfig.telegramAuth, { botToken: "", sessionMaxAge });
-    nuxt.options.runtimeConfig.telegramAuth = telegramAuth;
+    nuxt.options.runtimeConfig.telegramAuth = defu(nuxt.options.runtimeConfig.telegramAuth, {
+      botToken: "",
+      clientSecret: "",
+      sessionPassword: "",
+      redirectUrl: "",
+      migrateLegacyCookie: options.compat?.migrateLegacyCookie ?? true,
+      oidc: { ...TELEGRAM_OIDC, jwks: "" },
+      session: {
+        name: options.session?.name ?? DEFAULT_SESSION_NAME,
+        maxAge: options.session?.maxAge ?? options.sessionMaxAge ?? DEFAULT_SESSION_MAX_AGE,
+        cookie: options.session?.cookie ?? {},
+      },
+    });
+    nuxt.options.runtimeConfig.public.telegramAuth = defu(nuxt.options.runtimeConfig.public.telegramAuth as Record<string, unknown> | undefined, {
+      clientId: "",
+      scope: options.scope ?? [],
+      loginPath: options.loginPath ?? DEFAULT_LOGIN_PATH,
+      redirectAfterLogin: options.redirectAfterLogin ?? DEFAULT_REDIRECT_AFTER_LOGIN,
+      protectAll: options.protectAll ?? false,
+    });
 
-    const hasBotToken = telegramAuth.botToken || nuxt.options.runtimeConfig.TELEGRAM_TOKEN || process.env.NUXT_TELEGRAM_AUTH_BOT_TOKEN || process.env.NUXT_TELEGRAM_TOKEN;
-    if (nuxt.options.dev && !hasBotToken) {
-      useLogger("nuxt-telegram-auth").warn("No Telegram bot token found. Set NUXT_TELEGRAM_AUTH_BOT_TOKEN in your .env file.");
+    if (nuxt.options.dev) {
+      const logger = useLogger("nuxt-telegram-auth");
+      const runtimeConfig = nuxt.options.runtimeConfig as RawTelegramConfig;
+      for (const warning of collectConfigWarnings({ options, runtimeConfig, env: process.env })) logger.warn(warning);
     }
 
     addImportsDir(resolver.resolve("./runtime/app/composables"));

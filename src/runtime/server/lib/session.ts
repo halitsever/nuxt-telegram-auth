@@ -14,7 +14,7 @@ export function getBotToken(event: H3Event): string {
 }
 
 export function getSessionMaxAge(event: H3Event): number {
-  return useRuntimeConfig(event).telegramAuth?.sessionMaxAge ?? 86400;
+  return useRuntimeConfig(event).telegramAuth?.session?.maxAge ?? 86400;
 }
 
 export function toPublicSession(data: TelegramAuthData): ITelegramSession {
