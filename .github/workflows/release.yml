@@ -128,7 +128,7 @@ jobs:
           if [[ "$version" == *-* ]] && [ "$DIST_TAG" = "latest" ]; then
             echo "::error::$version is a prerelease; publish it under next, not latest."
             exit 1
-          fi"
+          fi
 
       - name: Publish to npm
         env:
