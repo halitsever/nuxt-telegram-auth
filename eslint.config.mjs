@@ -11,7 +11,7 @@ export default createConfigForNuxt({
   },
 
   dirs: {
-    src: ["./playground"],
+    src: ["./playground", "./test/fixtures/pages"],
   },
 }).append([
   {

@@ -1,6 +1,6 @@
 import * as crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { decodeAuthCookie, encodeAuthCookie, safeRedirect, verifyTelegramAuthData } from "../../src/runtime/server/lib/verify";
+import { decodeAuthCookie, safeRedirect, verifyTelegramAuthData } from "../../src/runtime/server/lib/verify";
 
 const TOKEN = "123456:test-token";
 
@@ -49,9 +49,9 @@ describe("verifyTelegramAuthData", () => {
 });
 
 describe("auth cookie encoding", () => {
-  it("round trips names outside the Latin-1 range", () => {
+  it("reads names outside the Latin-1 range", () => {
     const data = { ...user, first_name: "Ünal 🚀" };
-    expect(decodeAuthCookie(encodeAuthCookie(data))).toEqual(data);
+    expect(decodeAuthCookie(Buffer.from(JSON.stringify(data)).toString("base64"))).toEqual(data);
   });
 
   it("reads values written with Buffer base64", () => {
@@ -78,5 +78,12 @@ describe("safeRedirect", () => {
     [undefined, "/"],
   ])("%j redirects to %j", (input, expected) => {
     expect(safeRedirect(input)).toBe(expected);
+  });
+
+  it.each([
+    ["//evil.example", "/home"],
+    ["/a", "/a"],
+  ])("%j with fallback /home redirects to %j", (input, expected) => {
+    expect(safeRedirect(input, "/home")).toBe(expected);
   });
 });

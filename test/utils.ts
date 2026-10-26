@@ -21,3 +21,20 @@ export function signAuthData(overrides: Overrides = {}, token = TEST_TOKEN) {
 export function createSessionCookie(overrides: Overrides = {}, token = TEST_TOKEN) {
   return Buffer.from(JSON.stringify(signAuthData(overrides, token))).toString("base64");
 }
+
+export function findSetCookie(res: Response, name: string): string | undefined {
+  return res.headers.getSetCookie().find((cookie) => cookie.startsWith(`${name}=`));
+}
+
+export function cookieMaxAge(setCookie: string): number {
+  return Number(/Max-Age=(\d+)/i.exec(setCookie)?.[1]);
+}
+
+/** The cookies a response set, as a `Cookie` header for the next request. Deletions are left out. */
+export function toCookieHeader(res: Response): string {
+  return res.headers
+    .getSetCookie()
+    .map((cookie) => cookie.split(";")[0]!)
+    .filter((pair) => !pair.endsWith("="))
+    .join("; ");
+}
