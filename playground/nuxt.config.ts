@@ -9,4 +9,10 @@ export default defineNuxtConfig({
       botUsername: "",
     },
   },
+  // Telegram needs a public HTTPS address, so local testing goes through a cloudflared tunnel.
+  vite: {
+    server: {
+      allowedHosts: [".trycloudflare.com"],
+    },
+  },
 });
