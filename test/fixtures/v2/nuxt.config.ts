@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   modules: [NuxtTelegramAuth],
   runtimeConfig: {
     telegramAuth: {
+      botToken: "test_bot_token_12345",
       sessionPassword: "test-session-password-of-32-chars-or-more",
     },
   },

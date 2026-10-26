@@ -1,7 +1,12 @@
 import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 import { setup, $fetch, fetch, url } from "@nuxt/test-utils/e2e";
-import { createSessionCookie, signAuthData } from "./utils";
+import { cookieMaxAge, createSessionCookie, findSetCookie, signAuthData, toCookieHeader } from "./utils";
+
+const now = () => Math.floor(Date.now() / 1000);
+const SESSION = "nuxt-telegram-auth";
+
+type SessionBody = { loggedIn: boolean; user: { id: number; first_name?: string } };
 
 describe("ssr", async () => {
   await setup({
@@ -19,7 +24,7 @@ describe("ssr", async () => {
       expect(html).toContain('<p id="session-state">logged out</p>');
     });
 
-    it("renders the user when the request carries a valid cookie", async () => {
+    it("renders the user when the request carries a valid 1.x cookie", async () => {
       const html = await $fetch("/", {
         headers: { Cookie: `tg_user=${createSessionCookie()}` },
       });
@@ -28,74 +33,37 @@ describe("ssr", async () => {
   });
 
   describe("GET /api/telegram/session", () => {
-    it("returns 401 when no cookie is present", async () => {
-      const result = await $fetch("/api/telegram/session");
-      expect(result.loggedIn).toBe(false);
-      expect(result.status).toBe(401);
+    const get = (cookie = "") => fetch("/api/telegram/session", { headers: { cookie } });
+
+    it("answers GET without a session with loggedIn false, no cookie and no-store", async () => {
+      const res = await get();
+      expect(await res.json()).toEqual({ loggedIn: false });
+      expect(res.headers.getSetCookie()).toEqual([]);
+      expect(res.headers.get("cache-control")).toBe("private, no-store");
     });
 
-    it("returns loggedIn: true with a valid session cookie", async () => {
-      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${createSessionCookie()}` },
-      });
-      expect(result.loggedIn).toBe(true);
-      expect(result.first_name).toBe("Test");
+    it("migrates a valid tg_user cookie, keeps its expiry and deletes it", async () => {
+      const authDate = now() - 3600;
+      const res = await get(`tg_user=${createSessionCookie({ auth_date: authDate })}`);
+      expect(await res.json()).toMatchObject({ loggedIn: true, provider: "legacy", user: { id: 123456789, first_name: "Test" }, loggedInAt: authDate });
+      expect(findSetCookie(res, "tg_user")).toMatch(/^tg_user=; Max-Age=0; Path=\//);
+      expect(cookieMaxAge(findSetCookie(res, SESSION)!)).toBeCloseTo(82800, -1);
     });
 
-    it("marks the response as private and uncacheable", async () => {
-      const response = await fetch("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${createSessionCookie()}` },
-      });
-      expect(response.headers.get("cache-control")).toBe("private, no-store");
+    it.each([
+      ["expired", createSessionCookie({ auth_date: now() - 86401 })],
+      ["tampered", Buffer.from(JSON.stringify({ ...signAuthData(), first_name: "Eve" })).toString("base64")],
+      ["dateless", createSessionCookie({ auth_date: undefined })],
+    ])("ignores a %s tg_user cookie and deletes it", async (_, value) => {
+      const res = await get(`tg_user=${value}`);
+      expect(await res.json()).toEqual({ loggedIn: false });
+      expect(findSetCookie(res, "tg_user")).toMatch(/^tg_user=; Max-Age=0/);
+      expect(findSetCookie(res, SESSION)).toBeUndefined();
     });
 
-    it("leaves the hash out of the response", async () => {
-      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${createSessionCookie()}` },
-      });
-      expect(result).not.toHaveProperty("hash");
-    });
-
-    it("returns loggedIn: false when hash is invalid", async () => {
-      const tampered = Buffer.from(
-        JSON.stringify({
-          id: 123456789,
-          first_name: "Test",
-          username: "testuser",
-          auth_date: Math.floor(Date.now() / 1000),
-          hash: "000000000000000000000000000000000000000000000000000000000000000",
-        }),
-      ).toString("base64");
-
-      const result = await $fetch("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${tampered}` },
-      });
-      expect(result.loggedIn).toBe(false);
-    });
-
-    it("returns 401 when session is expired", async () => {
-      const cookie = createSessionCookie({
-        auth_date: Math.floor(Date.now() / 1000) - 86401,
-      });
-      const result = await $fetch("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${cookie}` },
-      });
-      expect(result.loggedIn).toBe(false);
-      expect(result.status).toBe(401);
-    });
-
-    it("returns loggedIn: false when auth_date is missing", async () => {
-      const result = await $fetch("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${createSessionCookie({ auth_date: undefined })}` },
-      });
-      expect(result.loggedIn).toBe(false);
-    });
-
-    it("reads names outside the Latin-1 range", async () => {
-      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
-        headers: { Cookie: `tg_user=${createSessionCookie({ first_name: "Ünal 🚀" })}` },
-      });
-      expect(result.first_name).toBe("Ünal 🚀");
+    it("migrates names outside the Latin-1 range", async () => {
+      const res = await get(`tg_user=${createSessionCookie({ first_name: "Ünal 🚀" })}`);
+      expect((await res.json()).user.first_name).toBe("Ünal 🚀");
     });
   });
 
@@ -107,36 +75,33 @@ describe("ssr", async () => {
         body: typeof body === "string" ? body : JSON.stringify(body),
       });
 
-    const sessionCookie = (response: Response) => response.headers.getSetCookie().find((value) => value.startsWith("tg_user="));
-
-    it("sets an HttpOnly session cookie for a valid login", async () => {
-      const response = await post(signAuthData());
-      expect(response.status).toBe(200);
-      const body = await response.json();
-      expect(body).toMatchObject({ loggedIn: true, first_name: "Test" });
-      expect(body).not.toHaveProperty("hash");
-      expect(sessionCookie(response)).toMatch(/HttpOnly/);
-      expect(sessionCookie(response)).toMatch(/SameSite=Lax/);
-      expect(sessionCookie(response)).toMatch(/Path=\//);
+    it("logs in from a widget POST and returns the v2 shape", async () => {
+      const res = await post(signAuthData());
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ loggedIn: true, user: { id: 123456789, first_name: "Test", username: "testuser" }, provider: "legacy", loggedInAt: expect.any(Number) });
+      expect(res.headers.get("cache-control")).toBe("private, no-store");
+      const cookie = findSetCookie(res, SESSION);
+      expect(cookie).toMatch(/HttpOnly/);
+      expect(cookie).toMatch(/SameSite=Lax/);
+      expect(cookie).toMatch(/Path=\//);
     });
 
     it("creates a session that GET can read back", async () => {
-      const response = await post(signAuthData({ first_name: "Ünal 🚀" }));
-      const cookie = sessionCookie(response)?.split(";")[0];
-      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", { headers: { Cookie: cookie ?? "" } });
-      expect(result).toMatchObject({ loggedIn: true, first_name: "Ünal 🚀" });
+      const res = await post(signAuthData({ first_name: "Ünal 🚀" }));
+      const session = await $fetch<SessionBody>("/api/telegram/session", { headers: { Cookie: toCookieHeader(res) } });
+      expect(session).toMatchObject({ loggedIn: true, user: { first_name: "Ünal 🚀" } });
     });
 
     it("rejects a login with a bad hash", async () => {
-      const response = await post({ ...signAuthData(), first_name: "Eve" });
-      expect(response.status).toBe(401);
-      expect(sessionCookie(response)).toBeUndefined();
+      const res = await post({ ...signAuthData(), first_name: "Eve" });
+      expect(res.status).toBe(401);
+      expect(findSetCookie(res, SESSION)).toBeUndefined();
     });
 
-    it("rejects a login older than sessionMaxAge", async () => {
-      const response = await post(signAuthData({ auth_date: Math.floor(Date.now() / 1000) - 86401 }));
-      expect(response.status).toBe(401);
-      expect(sessionCookie(response)).toBeUndefined();
+    it("rejects a login older than session.maxAge", async () => {
+      const res = await post(signAuthData({ auth_date: now() - 86401 }));
+      expect(res.status).toBe(401);
+      expect(findSetCookie(res, SESSION)).toBeUndefined();
     });
 
     it("rejects requests from another site", async () => {
@@ -147,15 +112,15 @@ describe("ssr", async () => {
     it("accepts requests from the same site", async () => {
       const sameSite: Record<string, string>[] = [{ Origin: new URL(url("/")).origin }, { "Sec-Fetch-Site": "same-origin" }];
       for (const headers of sameSite) {
-        const response = await post(signAuthData(), headers);
-        expect(response.status).toBe(200);
-        expect(await response.json()).toMatchObject({ loggedIn: true });
+        const res = await post(signAuthData(), headers);
+        expect(res.status).toBe(200);
+        expect(await res.json()).toMatchObject({ loggedIn: true });
       }
     });
 
     it("rejects bodies that are not JSON", async () => {
-      const response = await post("id=1", { "Content-Type": "application/x-www-form-urlencoded" });
-      expect(response.status).toBe(415);
+      const res = await post("id=1", { "Content-Type": "application/x-www-form-urlencoded" });
+      expect(res.status).toBe(415);
     });
   });
 
@@ -165,48 +130,55 @@ describe("ssr", async () => {
       return fetch(`/api/telegram/callback?${query}`, { redirect: "manual" });
     };
 
-    const sessionCookie = (response: Response) => response.headers.getSetCookie().find((value) => value.startsWith("tg_user="));
-
     it("logs in and redirects to the given path", async () => {
-      const response = await callback({ redirect: "/dashboard", ...signAuthData() });
-      expect(response.status).toBe(302);
-      expect(response.headers.get("location")).toBe("/dashboard");
-      expect(response.headers.get("referrer-policy")).toBe("no-referrer");
-      expect(sessionCookie(response)).toMatch(/HttpOnly/);
+      const res = await callback({ redirect: "/dashboard", ...signAuthData() });
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe("/dashboard");
+      expect(res.headers.get("referrer-policy")).toBe("no-referrer");
+      expect(res.headers.get("cache-control")).toBe("private, no-store");
+      expect(findSetCookie(res, SESSION)).toMatch(/HttpOnly/);
     });
 
     it("redirects to the home page when the target is on another site", async () => {
-      const response = await callback({ redirect: "//evil.example", ...signAuthData() });
-      expect(response.status).toBe(302);
-      expect(response.headers.get("location")).toBe("/");
+      const res = await callback({ redirect: "//evil.example", ...signAuthData() });
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe("/");
     });
 
-    it("keeps numeric fields as numbers in the session", async () => {
-      const response = await callback(signAuthData());
-      const cookie = sessionCookie(response)?.split(";")[0];
-      const result = await $fetch<Record<string, unknown>>("/api/telegram/session", { headers: { Cookie: cookie ?? "" } });
-      expect(result.id).toBe(123456789);
-      expect(result.auth_date).toBeTypeOf("number");
+    it("stores the numeric user id from the query string", async () => {
+      const res = await callback(signAuthData());
+      const session = await $fetch<SessionBody>("/api/telegram/session", { headers: { Cookie: toCookieHeader(res) } });
+      expect(session.user.id).toBe(123456789);
     });
 
     it("rejects a login with a bad hash", async () => {
-      const response = await callback({ ...signAuthData(), first_name: "Eve" });
-      expect(response.status).toBe(401);
-      expect(sessionCookie(response)).toBeUndefined();
+      const res = await callback({ ...signAuthData(), first_name: "Eve" });
+      expect(res.status).toBe(401);
+      expect(findSetCookie(res, SESSION)).toBeUndefined();
     });
   });
 
   describe("DELETE /api/telegram/session", () => {
-    it("returns 200 and clears the session", async () => {
-      const result = await $fetch("/api/telegram/session", { method: "DELETE" });
-      expect(result.status).toBe(200);
+    it("logs out and expires the session cookie", async () => {
+      const login = await fetch("/api/telegram/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(signAuthData()) });
+      const res = await fetch("/api/telegram/session", { method: "DELETE", headers: { cookie: toCookieHeader(login) } });
+      expect(await res.json()).toEqual({ loggedIn: false });
+      expect(findSetCookie(res, SESSION)).toMatch(/^nuxt-telegram-auth=; Max-Age=0; Path=\//);
     });
 
-    it("expires the session cookie for the whole site", async () => {
-      const response = await fetch("/api/telegram/session", { method: "DELETE" });
-      const cookie = response.headers.getSetCookie().find((value) => value.startsWith("tg_user="));
-      expect(cookie).toMatch(/Max-Age=0/);
-      expect(cookie).toMatch(/Path=\//);
+    it("also deletes a leftover tg_user cookie, so GET can't log the user back in", async () => {
+      const res = await fetch("/api/telegram/session", { method: "DELETE", headers: { cookie: `tg_user=${createSessionCookie()}` } });
+      expect(findSetCookie(res, "tg_user")).toMatch(/^tg_user=; Max-Age=0; Path=\//);
+    });
+  });
+
+  describe("server utils", () => {
+    it("guards server routes with requireTelegramSession", async () => {
+      expect((await fetch("/api/me")).status).toBe(401);
+      const login = await fetch("/api/telegram/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(signAuthData()) });
+      const res = await fetch("/api/me", { headers: { cookie: toCookieHeader(login) } });
+      expect(res.status).toBe(200);
+      expect(await res.json()).toMatchObject({ id: 123456789, first_name: "Test" });
     });
   });
 });

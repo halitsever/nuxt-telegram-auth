@@ -5,8 +5,9 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "#app";
-import { useSessionState } from "../app/composables/session";
-import type { ITelegramSession, ITelegramUser } from "../types/session";
+import { toLegacySession, useSessionState } from "../app/composables/session";
+import type { TelegramSessionResponse } from "../shared/types";
+import type { ITelegramUser } from "../types/session";
 
 const props = withDefaults(
   defineProps<{
@@ -46,7 +47,7 @@ const callbacks = () => window as unknown as Record<string, unknown>;
 
 async function onTelegramAuth(user: ITelegramUser) {
   try {
-    session.value = await $fetch<ITelegramSession>("/api/telegram/session", { method: "POST", body: user });
+    session.value = toLegacySession(await $fetch<TelegramSessionResponse>("/api/telegram/session", { method: "POST", body: user }));
   } catch {
     session.value = { loggedIn: false, status: 401 };
   }

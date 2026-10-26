@@ -12,10 +12,10 @@ describe("bot token from NUXT_TELEGRAM_TOKEN only", async () => {
   });
 
   it("validates a session signed with the env token", async () => {
-    const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
+    const result = await $fetch<{ loggedIn: boolean; user: Record<string, unknown> }>("/api/telegram/session", {
       headers: { Cookie: `tg_user=${createSessionCookie({}, ENV_TOKEN)}` },
     });
     expect(result.loggedIn).toBe(true);
-    expect(result.first_name).toBe("Test");
+    expect(result.user).toMatchObject({ first_name: "Test" });
   });
 });

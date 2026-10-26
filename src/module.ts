@@ -94,6 +94,14 @@ export default defineNuxtModule<ModuleOptions>({
         name: "requireTelegramSession",
         from: resolver.resolve("runtime/server/utils/telegram"),
       },
+      {
+        name: "clearTelegramSession",
+        from: resolver.resolve("runtime/server/utils/telegram"),
+      },
+      {
+        name: "verifyTelegramWidgetPayload",
+        from: resolver.resolve("runtime/server/utils/telegram"),
+      },
     ]);
 
     addComponent({

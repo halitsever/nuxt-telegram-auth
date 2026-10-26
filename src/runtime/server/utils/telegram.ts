@@ -1,25 +1,24 @@
-import { getCookie, createError } from "h3";
-import type { H3Event } from "h3";
-import type { ITelegramSession } from "../../types/session";
-import { getBotToken, getSessionMaxAge, SESSION_COOKIE } from "../lib/session";
-import { decodeAuthCookie, verifyTelegramAuthData } from "../lib/verify";
+import { createError } from "nuxt/server";
+import type { RequestEvent } from "nuxt/server";
+import type { TelegramSession, TelegramUser } from "../../shared/types";
+import { verifyWidgetPayload } from "../lib/legacy";
+import { deleteTelegramSession, readTelegramSession } from "../lib/store";
 
-// Validates the tg_user cookie and returns the session, or null if invalid/missing.
-export async function getTelegramSession(event: H3Event): Promise<ITelegramSession | null> {
-  const cookie = getCookie(event, SESSION_COOKIE);
-  const data = cookie ? decodeAuthCookie(cookie) : null;
-  if (!data) return null;
-
-  if (Date.now() / 1000 - Number(data.auth_date) > getSessionMaxAge(event)) return null;
-
-  if (!(await verifyTelegramAuthData(data, getBotToken(event)))) return null;
-
-  return { loggedIn: true, status: 200, ...data } as unknown as ITelegramSession;
+export function getTelegramSession(event: RequestEvent): Promise<TelegramSession | null> {
+  return readTelegramSession(event);
 }
 
-// Like getTelegramSession but throws 401 if session is missing or invalid.
-export async function requireTelegramSession(event: H3Event): Promise<ITelegramSession> {
+export async function requireTelegramSession(event: RequestEvent): Promise<TelegramSession> {
   const session = await getTelegramSession(event);
-  if (!session) throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
+  if (!session) throw createError({ status: 401, statusText: "Unauthorized" });
   return session;
+}
+
+export function clearTelegramSession(event: RequestEvent): Promise<void> {
+  return deleteTelegramSession(event);
+}
+
+/** Checks a legacy widget payload (signature and age) without logging anyone in. */
+export function verifyTelegramWidgetPayload(payload: unknown): Promise<TelegramUser | null> {
+  return verifyWidgetPayload(payload);
 }

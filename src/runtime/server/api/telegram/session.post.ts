@@ -1,22 +1,25 @@
-import { eventHandler, getRequestHeader, readBody, setResponseHeader, setResponseStatus } from "h3";
-import { createTelegramSession, isCrossSiteRequest } from "../../lib/session";
+import { createError, defineEventHandler, readBody, setResponseStatus } from "nuxt/server";
+import type { TelegramSessionResponse } from "../../../shared/types";
+import { loginWithWidgetData } from "../../lib/legacy";
+import { reportLoginError } from "../../lib/pipeline";
+import { isCrossSiteRequest, isJsonRequest, noStore } from "../../lib/request";
 
-export default eventHandler(async (event) => {
-  setResponseHeader(event, "Cache-Control", "private, no-store");
+export default defineEventHandler(async (event): Promise<TelegramSessionResponse> => {
+  noStore(event);
 
-  if (!getRequestHeader(event, "content-type")?.startsWith("application/json")) {
+  if (!isJsonRequest(event)) {
     setResponseStatus(event, 415);
-    return { loggedIn: false, status: 415, message: "Unsupported Media Type" };
+    return { loggedIn: false };
   }
-
   if (isCrossSiteRequest(event)) {
     setResponseStatus(event, 403);
-    return { loggedIn: false, status: 403, message: "Forbidden" };
+    return { loggedIn: false };
   }
 
-  const session = await createTelegramSession(event, await readBody(event));
-  if (session) return session;
+  const session = await loginWithWidgetData(event, await readBody(event));
+  if (session) return { loggedIn: true, ...session };
 
+  await reportLoginError(event, "legacy", createError({ status: 401, message: "The login data failed Telegram's signature or age check." }));
   setResponseStatus(event, 401);
-  return { loggedIn: false, status: 401, message: "Unauthorized" };
+  return { loggedIn: false };
 });

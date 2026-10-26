@@ -26,12 +26,6 @@ export async function verifyTelegramAuthData(data: TelegramAuthData, botToken: s
   return crypto.subtle.verify("HMAC", key, signature, encoder.encode(checkString));
 }
 
-export function encodeAuthCookie(data: TelegramAuthData): string {
-  let binary = "";
-  for (const byte of encoder.encode(JSON.stringify(data))) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
 export function decodeAuthCookie(value: string): TelegramAuthData | null {
   try {
     const binary = atob(value.replace(/-/g, "+").replace(/_/g, "/"));

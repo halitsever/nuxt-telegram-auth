@@ -9,9 +9,10 @@ describe("bot token from runtimeConfig.telegramAuth.botToken", async () => {
   });
 
   it("validates a session signed with the configured token", async () => {
-    const result = await $fetch<Record<string, unknown>>("/api/telegram/session", {
+    const result = await $fetch<{ loggedIn: boolean; user: Record<string, unknown> }>("/api/telegram/session", {
       headers: { Cookie: `tg_user=${createSessionCookie({}, "config_bot_token_24680")}` },
     });
     expect(result.loggedIn).toBe(true);
+    expect(result.user).toMatchObject({ first_name: "Test" });
   });
 });

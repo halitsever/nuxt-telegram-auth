@@ -89,7 +89,7 @@ describe("TelegramLoginWidget", () => {
       method: "POST",
       handler: async (event) => {
         posted = await readBody(event);
-        return { loggedIn: true, status: 200, first_name: "Ada" };
+        return { loggedIn: true, user: { id: 42, first_name: "Ada" }, provider: "legacy", loggedInAt: 1700000000 };
       },
     });
 
