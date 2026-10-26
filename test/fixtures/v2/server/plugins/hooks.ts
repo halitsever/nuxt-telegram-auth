@@ -1,7 +1,8 @@
 import { createError, useServerHooks } from "nuxt/server";
 import { hookCalls } from "../hook-calls";
 
-export default defineNitroPlugin(() => {
+// A plain function, so the plugin also loads without Nitro's auto-imports (Nuxt 5).
+export default () => {
   const hooks = useServerHooks();
 
   hooks.hook("telegram-auth:login", (ctx) => {
@@ -22,4 +23,4 @@ export default defineNitroPlugin(() => {
     const { status, code } = error as { status?: number; code?: string };
     hookCalls.push({ hook: "error", provider, status, code });
   });
-});
+};
