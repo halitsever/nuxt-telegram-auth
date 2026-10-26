@@ -7,6 +7,20 @@ interface WarningInput {
   env: Record<string, string | undefined>;
 }
 
+/** nuxt-security's options, as far as the opener policy goes. */
+export interface SecurityOptions {
+  headers?: false | { crossOriginOpenerPolicy?: string | false };
+}
+
+/** The Telegram Login popup can't report back to a page that is `Cross-Origin-Opener-Policy: same-origin`, nuxt-security's default. */
+export function coopWarning(security: SecurityOptions | undefined): string | undefined {
+  const policy = security?.headers === false ? false : security?.headers?.crossOriginOpenerPolicy;
+  if (policy === undefined || policy === "same-origin") {
+    return "nuxt-security sets Cross-Origin-Opener-Policy to same-origin by default, which breaks the Telegram Login popup. Set it to same-origin-allow-popups on pages with a login button.";
+  }
+  return undefined;
+}
+
 /** Env overrides only apply at runtime, so `env` is checked alongside the build-time config. */
 export function collectConfigWarnings({ options, runtimeConfig, env }: WarningInput): string[] {
   const warnings: string[] = [];

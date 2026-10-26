@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collectConfigWarnings } from "../../src/warnings";
+import { collectConfigWarnings, coopWarning } from "../../src/warnings";
 
 const complete = {
   options: {},
@@ -35,5 +35,20 @@ describe("collectConfigWarnings", () => {
 
   it("stays quiet for a complete setup", () => {
     expect(collectConfigWarnings(complete)).toEqual([]);
+  });
+});
+
+describe("coopWarning", () => {
+  const message = "nuxt-security sets Cross-Origin-Opener-Policy to same-origin by default, which breaks the Telegram Login popup. Set it to same-origin-allow-popups on pages with a login button.";
+
+  it("warns while nuxt-security keeps its same-origin opener policy", () => {
+    expect(coopWarning(undefined)).toBe(message);
+    expect(coopWarning({ headers: { crossOriginOpenerPolicy: "same-origin" } })).toBe(message);
+  });
+
+  it("stays quiet when the opener policy allows popups", () => {
+    expect(coopWarning({ headers: { crossOriginOpenerPolicy: "same-origin-allow-popups" } })).toBeUndefined();
+    expect(coopWarning({ headers: { crossOriginOpenerPolicy: false } })).toBeUndefined();
+    expect(coopWarning({ headers: false })).toBeUndefined();
   });
 });

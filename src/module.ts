@@ -1,8 +1,8 @@
-import { defineNuxtModule, createResolver, addComponent, addImports, addPlugin, addServerHandler, addServerImports, addTypeTemplate, hasNuxtModule, useLogger } from "@nuxt/kit";
+import { defineNuxtModule, createResolver, addComponent, addImports, addPlugin, addRouteMiddleware, addServerHandler, addServerImports, addTypeTemplate, hasNuxtModule, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
 import { DEFAULT_LOGIN_PATH, DEFAULT_REDIRECT_AFTER_LOGIN, DEFAULT_SESSION_MAX_AGE, DEFAULT_SESSION_NAME, TELEGRAM_OIDC } from "./runtime/shared/defaults";
 import type { RawTelegramConfig } from "./runtime/server/lib/config";
-import { collectConfigWarnings } from "./warnings";
+import { collectConfigWarnings, coopWarning, type SecurityOptions } from "./warnings";
 
 export type { TelegramButtonStyle, TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser, TelegramWidgetUser } from "./runtime/shared/types";
 export type { TelegramErrorHookContext, TelegramLoginHookContext, TelegramLogoutHookContext, TelegramSessionHookContext } from "./runtime/server/hooks";
@@ -68,10 +68,14 @@ export default defineNuxtModule<ModuleOptions>({
       protectAll: options.protectAll ?? false,
     });
 
+    const logger = useLogger("nuxt-telegram-auth");
     if (nuxt.options.dev) {
-      const logger = useLogger("nuxt-telegram-auth");
       const runtimeConfig = nuxt.options.runtimeConfig as RawTelegramConfig;
       for (const warning of collectConfigWarnings({ options, runtimeConfig, env: process.env })) logger.warn(warning);
+    }
+    if (hasNuxtModule("nuxt-security")) {
+      const warning = coopWarning((nuxt.options as { security?: SecurityOptions }).security);
+      if (warning) logger.warn(warning);
     }
 
     // The hooks file declares the telegram-auth:* hooks on NuxtServerHooks.
@@ -82,6 +86,16 @@ export default defineNuxtModule<ModuleOptions>({
       },
       { nuxt: true, nitro: true },
     );
+
+    addTypeTemplate(
+      {
+        filename: "types/nuxt-telegram-auth-pages.d.ts",
+        getContents: () => `declare module "#app" {\n  interface PageMeta {\n    /** \`true\` needs a session, \`"guest"\` needs none, \`false\` opts out of \`protectAll\`. */\n    telegramAuth?: boolean | "guest";\n  }\n}\nexport {};\n`,
+      },
+      { nuxt: true },
+    );
+
+    addRouteMiddleware({ name: "telegram-auth", path: resolver.resolve("./runtime/app/middleware/telegram-auth"), global: true });
 
     addImports([
       { name: "useTelegramSession", from: resolver.resolve("./runtime/app/composables/session") },
