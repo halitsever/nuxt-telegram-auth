@@ -25,13 +25,13 @@ export async function resolveSessionPassword(config: TelegramAuthConfig): Promis
 }
 
 /** A value sealed into its own cookie. `kind` ties it to the cookie name, so a value sealed for one cookie is useless in another. */
-export function openSealedCookie<T>(event: RequestEvent, options: { name: string; maxAge: number }) {
+export function openSealedCookie<T>(event: RequestEvent, options: { name: string; maxAge: number; cookie?: Record<string, unknown> }) {
   const config = useTelegramConfig();
   const sessionConfig = async () => ({
     name: options.name,
     password: await resolveSessionPassword(config),
     maxAge: options.maxAge,
-    cookie: { ...config.session.cookie, path: "/" },
+    cookie: { ...config.session.cookie, ...options.cookie, path: "/" },
   });
 
   return {
