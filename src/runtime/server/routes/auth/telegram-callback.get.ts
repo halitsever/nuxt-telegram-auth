@@ -22,7 +22,11 @@ function errorCode(error: unknown): TelegramLoginErrorCode {
 async function finishLogin(event: RequestEvent): Promise<string> {
   const config = useTelegramConfig();
   const query = getQuery(event);
-  if (query.error) throw new TelegramAuthError("provider_error", 400, `Telegram answered "${String(query.error)}".`);
+  if (query.error) {
+    // This login is over; a leftover transaction would only wait out its 10 minutes.
+    await clearOidcTransaction(event);
+    throw new TelegramAuthError("provider_error", 400, `Telegram answered "${String(query.error)}".`);
+  }
 
   const transaction = await readOidcTransaction(event);
   if (!transaction) {
