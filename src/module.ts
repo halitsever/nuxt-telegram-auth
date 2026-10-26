@@ -104,6 +104,10 @@ export default defineNuxtModule<ModuleOptions>({
         from: resolver.resolve("runtime/server/utils/telegram"),
       },
       {
+        name: "verifyTelegramIdToken",
+        from: resolver.resolve("runtime/server/utils/telegram"),
+      },
+      {
         name: "verifyTelegramWidgetPayload",
         from: resolver.resolve("runtime/server/utils/telegram"),
       },
