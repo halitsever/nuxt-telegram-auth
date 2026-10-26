@@ -83,7 +83,10 @@ export default defineNuxtModule<ModuleOptions>({
       { nuxt: true, nitro: true },
     );
 
-    addImports({ name: "useTelegramSession", from: resolver.resolve("./runtime/app/composables/session") });
+    addImports([
+      { name: "useTelegramSession", from: resolver.resolve("./runtime/app/composables/session") },
+      { name: "useTelegramLogin", from: resolver.resolve("./runtime/app/composables/login") },
+    ]);
     // nuxt-auth-utils has its own useUserSession; ours would shadow it.
     if (options.compat?.useUserSession !== false && !hasNuxtModule("nuxt-auth-utils")) {
       addImports({ name: "useUserSession", from: resolver.resolve("./runtime/app/composables/compat") });
