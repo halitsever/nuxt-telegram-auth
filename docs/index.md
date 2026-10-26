@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Nuxt Telegram Auth"
-  text: "Telegram login, done right"
-  tagline: Drop it into your Nuxt app, add your bot token, ship. That's it.
+  text: "Log in with Telegram"
+  tagline: Telegram Login for Nuxt, with the session checked and sealed on the server.
   actions:
     - theme: brand
       text: Get Started
@@ -18,26 +18,26 @@ hero:
 
 features:
   - icon: ⚡
-    title: One command to install
-    details: npx nuxi module add nuxt-telegram-auth and you're basically done. Component and composable are auto-imported.
+    title: Popup or redirect
+    details: "Drop in the TelegramLoginButton component for Telegram's popup, or send people through the OpenID Connect redirect. Inside Telegram's own browser the login is confirmed in the app."
 
   - icon: 🔒
-    title: Actually secure
-    details: The server checks Telegram's HMAC-SHA256 signature with a timing-safe comparison and keeps the login in an HttpOnly cookie. Follows Telegram's official spec.
-
-  - icon: 🛡️
-    title: Protect routes without the config mess
-    details: Just call requireTelegramSession(event) inside any server route. It's auto-imported, no setup needed.
+    title: Checked on the server
+    details: Telegram's id_token is verified against its public keys, with PKCE, state and nonce. The browser's copy of the user is never trusted.
 
   - icon: 🍪
     title: No database needed
-    details: Sessions live in a cookie. Works on Vercel, Netlify, anywhere. No Redis, no extra setup.
+    details: Sessions live in a sealed, HttpOnly cookie, so there is no database or Redis to set up.
 
-  - icon: 🔧
-    title: Tweak what you need
-    details: Session expiry is 24h by default but you can change it in nuxt.config.ts. Pretty much the only thing you'd want to configure anyway.
+  - icon: 🛡️
+    title: Pages and routes
+    details: "definePageMeta({ telegramAuth: true }) guards pages, requireTelegramSession(event) guards server routes."
 
-  - icon: 📘
-    title: TypeScript out of the box
-    details: Everything is typed, from session data to composable return values and server utils. Import the types straight from nuxt-telegram-auth.
+  - icon: 🪝
+    title: Hooks
+    details: Save users to your database, add a role to the session or refuse a login from a server hook.
+
+  - icon: 🔁
+    title: Old widget still works
+    details: Bots that haven't switched to Telegram Login keep the classic widget, and 1.x sessions carry over.
 ---

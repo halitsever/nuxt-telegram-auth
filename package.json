@@ -1,6 +1,6 @@
 {
   "name": "nuxt-telegram-auth",
-  "version": "1.4.0",
+  "version": "2.0.0-beta.0",
   "description": "🔐 Telegram login widget integration for Nuxt",
   "keywords": [
     "nuxt",
@@ -54,12 +54,16 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
   "peerDependencies": {
-    "nuxt": "^4.0.0"
+    "nuxt": ">=4.6.0"
   },
   "dependencies": {
-    "@nuxt/kit": "^4.4.6",
-    "defu": "^6.1.7"
+    "@nuxt/kit": "^4.6.2",
+    "defu": "^6.1.7",
+    "jose": "^6.2.13"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.17.0",

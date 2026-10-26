@@ -1,6 +1,6 @@
-# Installation
+# Quickstart
 
-First you need a Telegram bot. If you don't have one, create it via [@BotFather](https://core.telegram.org/bots#how-do-i-create-a-bot).
+This module logs people in with their Telegram account. It needs Nuxt 4.6 or newer and a Telegram bot. If you don't have a bot yet, create one with [@BotFather](https://core.telegram.org/bots#how-do-i-create-a-bot).
 
 ## Step 1: Install the module
 
@@ -8,54 +8,53 @@ First you need a Telegram bot. If you don't have one, create it via [@BotFather]
 npx nuxi module add nuxt-telegram-auth
 ```
 
-## Step 2: Add your bot token
+## Step 2: Set a session secret
 
-Grab your bot token from BotFather:
-
-<img src="/telegram-token.png" alt="BotFather token" />
-
-Then put it in your `.env` file:
+Sessions are sealed with a secret. Nuxt generates one in development, but a production build needs its own:
 
 ```bash
-NUXT_TELEGRAM_AUTH_BOT_TOKEN=123456:your_bot_token
+# .env
+NUXT_APP_SECRET=your-secret-of-at-least-32-characters
 ```
 
-Keep the token out of `nuxt.config.ts` and out of git. Anyone who has it can control your bot.
+`openssl rand -base64 32` prints a good one. Without a secret the first login in production fails with a message that says so.
 
-> **Important:** You also need to allow your domain in BotFather, otherwise you'll get an "Invalid Domain" error.
+## Step 3: Turn on Telegram Login for your bot
 
-<img src="/domain.png" alt="BotFather domain setting" />
+Open the [@BotFather](https://t.me/BotFather) Mini App, pick your bot and go to **Bot Settings → Login Widget** (some versions call it **Web Login**). There you:
 
-## Step 3: Use the widget
+1. Add your site to **Allowed URLs**: the origin (`https://example.com`) and the callback `https://example.com/auth/telegram/callback`.
+2. Copy the **Client ID** and the **Client Secret**.
+
+Then put them in `.env`:
+
+```bash
+NUXT_PUBLIC_TELEGRAM_AUTH_CLIENT_ID=123456789
+NUXT_TELEGRAM_AUTH_CLIENT_SECRET=your_client_secret
+```
+
+The client ID is your bot's numeric id, the part of the bot token before the colon. The secret is only needed for the [redirect login](/telegram-login#redirect-login); keep it out of git.
+
+::: warning
+Once a bot uses Telegram Login, Telegram's old login widget stops working for it on every domain, and BotFather has no obvious way to turn Telegram Login off again. If your site still uses `<TelegramLoginWidget>`, switch the bot and your code in the same deploy. See [Migrating from 1.x](/migration).
+:::
+
+## Step 4: Add a login button
 
 ```vue
 <template>
-  <div>
-    <div v-if="loading">Loading...</div>
-
-    <div v-else-if="session.loggedIn">
-      <p>Welcome, {{ session.first_name }}!</p>
-      <button @click="clearSession">Logout</button>
-    </div>
-
-    <div v-else>
-      <p v-if="error" style="color: red;">{{ error }}</p>
-      <TelegramLoginWidget telegram-login="my_bot" @callback="onLogin" />
-    </div>
+  <div v-if="loggedIn">
+    <p>Welcome, {{ user?.first_name }}!</p>
+    <button @click="clear">Log out</button>
   </div>
+  <TelegramLoginButton v-else />
 </template>
 
-<script setup>
-const { session, loading, error, clearSession } = useUserSession();
-
-const onLogin = (user) => {
-  console.log("Logged in:", user);
-};
+<script setup lang="ts">
+const { user, loggedIn, clear } = useTelegramSession();
 </script>
 ```
 
-`telegram-login` should be your bot's username (without the `@`).
+Clicking the button opens Telegram's login popup. When the user confirms, the server checks the token Telegram sends back, creates the session, and `useTelegramSession()` updates. Inside Telegram's own browser the login is confirmed in the app instead of a popup.
 
-When someone logs in, the widget sends the login data to the server. The server checks Telegram's signature, stores the session in an HttpOnly cookie, and then `@callback` fires with the user. You can navigate to another page from `@callback`, because the session is already saved by then.
-
-Sessions last 24 hours by default. See [Configuration](/configuration) to change that.
+Sessions last 24 hours by default. [Configuration](/configuration) covers that and the other options, and [Page protection](/pages) shows how to keep pages for logged-in users only.

@@ -26,12 +26,6 @@ export async function verifyTelegramAuthData(data: TelegramAuthData, botToken: s
   return crypto.subtle.verify("HMAC", key, signature, encoder.encode(checkString));
 }
 
-export function encodeAuthCookie(data: TelegramAuthData): string {
-  let binary = "";
-  for (const byte of encoder.encode(JSON.stringify(data))) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
 export function decodeAuthCookie(value: string): TelegramAuthData | null {
   try {
     const binary = atob(value.replace(/-/g, "+").replace(/_/g, "/"));
@@ -42,13 +36,4 @@ export function decodeAuthCookie(value: string): TelegramAuthData | null {
   }
 }
 
-/** Keeps redirects on the current origin, so a crafted `redirect` can't send the user elsewhere. */
-export function safeRedirect(target: unknown): string {
-  if (typeof target !== "string" || !target.startsWith("/")) return "/";
-  try {
-    const url = new URL(target, "http://localhost");
-    return url.origin === "http://localhost" ? url.pathname + url.search + url.hash : "/";
-  } catch {
-    return "/";
-  }
-}
+export { safeRedirect } from "../../shared/redirect";

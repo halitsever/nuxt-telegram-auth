@@ -1,5 +1,60 @@
 # Changelog
 
+## v2.0.0-beta.0
+
+[compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.4.0...v2.0.0-beta.0)
+
+### 🚀 Enhancements
+
+- ⚠️  Require nuxt 4.6 and add shared telegram user types ([f8e9ed6](https://github.com/halitsever/nuxt-telegram-auth/commit/f8e9ed6))
+- Add v2 configuration with oidc settings ([be869d6](https://github.com/halitsever/nuxt-telegram-auth/commit/be869d6))
+- Add sealed cookie storage for sessions ([6973ae4](https://github.com/halitsever/nuxt-telegram-auth/commit/6973ae4))
+- Add the login pipeline and server hooks ([20adfe8](https://github.com/halitsever/nuxt-telegram-auth/commit/20adfe8))
+- ⚠️  Move legacy widget logins to the sealed session ([d461521](https://github.com/halitsever/nuxt-telegram-auth/commit/d461521))
+- ⚠️  Add useTelegramSession and keep useUserSession as a deprecated alias ([d6e6e8d](https://github.com/halitsever/nuxt-telegram-auth/commit/d6e6e8d))
+- Verify telegram id tokens with jose ([83a871a](https://github.com/halitsever/nuxt-telegram-auth/commit/83a871a))
+- Add pkce, state and nonce helpers ([ff974de](https://github.com/halitsever/nuxt-telegram-auth/commit/ff974de))
+- Add the oidc redirect login ([a88dd29](https://github.com/halitsever/nuxt-telegram-auth/commit/a88dd29))
+- Add the popup sdk login endpoints ([52743d1](https://github.com/halitsever/nuxt-telegram-auth/commit/52743d1))
+- Add useTelegramLogin with the telegram login sdk ([b9d9631](https://github.com/halitsever/nuxt-telegram-auth/commit/b9d9631))
+- Add the telegram login button ([7c999d6](https://github.com/halitsever/nuxt-telegram-auth/commit/7c999d6))
+- Add page protection with definePageMeta ([bac2f16](https://github.com/halitsever/nuxt-telegram-auth/commit/bac2f16))
+
+### 🩹 Fixes
+
+- Leave the session to the browser on prerendered and cached pages ([79ad112](https://github.com/halitsever/nuxt-telegram-auth/commit/79ad112))
+- Keep the oidc transaction cookie lax with a strict session cookie ([aa63bdf](https://github.com/halitsever/nuxt-telegram-auth/commit/aa63bdf))
+
+### 📖 Documentation
+
+- Note that telegram draws one login button per bot ([e76b6b2](https://github.com/halitsever/nuxt-telegram-auth/commit/e76b6b2))
+- Document telegram login, sessions and the 2.0 migration ([87c9bbd](https://github.com/halitsever/nuxt-telegram-auth/commit/87c9bbd))
+- Show a server plugin that works with nuxt 5 compatibility ([95e8329](https://github.com/halitsever/nuxt-telegram-auth/commit/95e8329))
+
+### 🏡 Chore
+
+- Refresh the lockfile to pick up security fixes ([dfa1094](https://github.com/halitsever/nuxt-telegram-auth/commit/dfa1094))
+- Keep author emails out of the changelog ([d48f59c](https://github.com/halitsever/nuxt-telegram-auth/commit/d48f59c))
+
+### ✅ Tests
+
+- Register fixture hooks without nitro auto-imports ([49fc237](https://github.com/halitsever/nuxt-telegram-auth/commit/49fc237))
+
+### 🤖 CI
+
+- Release 2.0 betas from the v2 branch ([fef3e1d](https://github.com/halitsever/nuxt-telegram-auth/commit/fef3e1d))
+- Fix a stray quote in the release workflow ([0b3a8e2](https://github.com/halitsever/nuxt-telegram-auth/commit/0b3a8e2))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Require nuxt 4.6 and add shared telegram user types ([f8e9ed6](https://github.com/halitsever/nuxt-telegram-auth/commit/f8e9ed6))
+- ⚠️  Move legacy widget logins to the sealed session ([d461521](https://github.com/halitsever/nuxt-telegram-auth/commit/d461521))
+- ⚠️  Add useTelegramSession and keep useUserSession as a deprecated alias ([d6e6e8d](https://github.com/halitsever/nuxt-telegram-auth/commit/d6e6e8d))
+
+### ❤️ Contributors
+
+- Halit Sever ([@halitsever](https://github.com/halitsever))
+
 ## v1.4.0
 
 [compare changes](https://github.com/halitsever/nuxt-telegram-auth/compare/v1.3.7...v1.4.0)

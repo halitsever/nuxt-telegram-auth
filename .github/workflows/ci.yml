@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+      - v2
+      - v1
   pull_request:
     branches:
       - main
+      - v2
+      - v1
 
 permissions:
   contents: read
@@ -97,3 +101,27 @@ jobs:
 
       - name: Build an app against the packed module
         run: bash scripts/pack-smoke.sh
+
+  compat-5:
+    runs-on: ubuntu-latest
+    # Whether the module runs on Nuxt 5 (Nitro v3) is still being checked, so this job reports without blocking.
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prepare For Dev
+        run: pnpm run dev:prepare
+
+      - name: Test the v2 fixtures with compatibilityVersion 5
+        env:
+          NUXT_TEST_COMPAT: "5"
+        run: pnpm exec vitest run --project e2e
