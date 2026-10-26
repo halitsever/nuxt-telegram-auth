@@ -42,6 +42,7 @@ export function useTelegramSession(): TelegramSessionComposable {
   const requestFetch = useRequestFetch();
   // During SSR the session endpoint runs inside the page request; cookies it sets (a migrated 1.x login) must reach the browser.
   const setCookieHeader = import.meta.server ? useResponseHeader("set-cookie") : undefined;
+  const cacheControlHeader = import.meta.server ? useResponseHeader("cache-control") : undefined;
 
   function fetch(): Promise<void> {
     let pending = inFlight.get(nuxtApp);
@@ -50,7 +51,10 @@ export function useTelegramSession(): TelegramSessionComposable {
         onResponse: setCookieHeader
           ? ({ response }) => {
               const cookies = response.headers.getSetCookie();
-              if (cookies.length > 0) appendSetCookie(setCookieHeader, cookies);
+              if (cookies.length === 0) return;
+              appendSetCookie(setCookieHeader, cookies);
+              // This page now carries one visitor's cookies; no shared cache may keep it.
+              if (cacheControlHeader) cacheControlHeader.value = "private, no-store";
             }
           : undefined,
       })

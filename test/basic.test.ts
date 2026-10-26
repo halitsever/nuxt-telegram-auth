@@ -35,6 +35,8 @@ describe("ssr", async () => {
       expect(await res.text()).toContain('<p id="session-state">logged in as Test</p>');
       expect(findSetCookie(res, SESSION)).toBeDefined();
       expect(findSetCookie(res, "tg_user")).toMatch(/^tg_user=; Max-Age=0/);
+      // A page carrying someone's session cookie must not be stored by a CDN.
+      expect(res.headers.get("cache-control")).toBe("private, no-store");
     });
   });
 
