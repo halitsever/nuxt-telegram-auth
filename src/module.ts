@@ -143,6 +143,18 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     addServerHandler({
+      handler: resolver.resolve("runtime/server/api/telegram/nonce.post"),
+      route: "/api/telegram/nonce",
+      method: "post",
+    });
+
+    addServerHandler({
+      handler: resolver.resolve("runtime/server/api/telegram/sdk.post"),
+      route: "/api/telegram/sdk",
+      method: "post",
+    });
+
+    addServerHandler({
       handler: resolver.resolve("runtime/server/routes/auth/telegram.get"),
       route: "/auth/telegram",
       method: "get",

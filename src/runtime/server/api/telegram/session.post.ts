@@ -2,17 +2,14 @@ import { createError, defineEventHandler, readBody, setResponseStatus } from "nu
 import type { TelegramSessionResponse } from "../../../shared/types";
 import { loginWithWidgetData } from "../../lib/legacy";
 import { reportLoginError } from "../../lib/pipeline";
-import { isCrossSiteRequest, isJsonRequest, noStore } from "../../lib/request";
+import { noStore, refuseLoginPost } from "../../lib/request";
 
 export default defineEventHandler(async (event): Promise<TelegramSessionResponse> => {
   noStore(event);
 
-  if (!isJsonRequest(event)) {
-    setResponseStatus(event, 415);
-    return { loggedIn: false };
-  }
-  if (isCrossSiteRequest(event)) {
-    setResponseStatus(event, 403);
+  const refused = refuseLoginPost(event);
+  if (refused) {
+    setResponseStatus(event, refused);
     return { loggedIn: false };
   }
 
