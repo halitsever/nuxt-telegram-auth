@@ -1,10 +1,11 @@
-import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, useLogger } from "@nuxt/kit";
+import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, addTypeTemplate, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
 import { DEFAULT_LOGIN_PATH, DEFAULT_REDIRECT_AFTER_LOGIN, DEFAULT_SESSION_MAX_AGE, DEFAULT_SESSION_NAME, TELEGRAM_OIDC } from "./runtime/shared/defaults";
 import type { RawTelegramConfig } from "./runtime/server/lib/config";
 import { collectConfigWarnings } from "./warnings";
 
 export type { TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser } from "./runtime/shared/types";
+export type { TelegramErrorHookContext, TelegramLoginHookContext, TelegramLogoutHookContext, TelegramSessionHookContext } from "./runtime/server/hooks";
 
 export interface ModuleOptions {
   session?: {
@@ -72,6 +73,15 @@ export default defineNuxtModule<ModuleOptions>({
       const runtimeConfig = nuxt.options.runtimeConfig as RawTelegramConfig;
       for (const warning of collectConfigWarnings({ options, runtimeConfig, env: process.env })) logger.warn(warning);
     }
+
+    // The hooks file declares the telegram-auth:* hooks on NuxtServerHooks.
+    addTypeTemplate(
+      {
+        filename: "types/nuxt-telegram-auth.d.ts",
+        getContents: () => `import type { TelegramLoginHookContext } from ${JSON.stringify(resolver.resolve("./runtime/server/hooks"))};\nexport {};\n`,
+      },
+      { nuxt: true, nitro: true },
+    );
 
     addImportsDir(resolver.resolve("./runtime/app/composables"));
 
