@@ -18,17 +18,23 @@ describe("ssr", async () => {
     expect(html).toContain("<div>basic</div>");
   });
 
-  describe("useUserSession() during SSR", () => {
+  describe("useTelegramSession() during SSR", () => {
     it("renders the logged out state without a cookie", async () => {
       const html = await $fetch("/");
       expect(html).toContain('<p id="session-state">logged out</p>');
     });
 
-    it("renders the user when the request carries a valid 1.x cookie", async () => {
-      const html = await $fetch("/", {
-        headers: { Cookie: `tg_user=${createSessionCookie()}` },
-      });
+    it("renders the user from the session cookie", async () => {
+      const login = await fetch("/api/telegram/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(signAuthData()) });
+      const html = await $fetch("/", { headers: { Cookie: toCookieHeader(login) } });
       expect(html).toContain('<p id="session-state">logged in as Test</p>');
+    });
+
+    it("migrates tg_user during SSR and sends the cookies with the page", async () => {
+      const res = await fetch("/", { headers: { cookie: `tg_user=${createSessionCookie()}` } });
+      expect(await res.text()).toContain('<p id="session-state">logged in as Test</p>');
+      expect(findSetCookie(res, SESSION)).toBeDefined();
+      expect(findSetCookie(res, "tg_user")).toMatch(/^tg_user=; Max-Age=0/);
     });
   });
 

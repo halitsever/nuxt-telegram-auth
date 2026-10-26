@@ -1,10 +1,10 @@
-import { defineNuxtModule, createResolver, addComponent, addServerHandler, addImportsDir, addServerImports, addTypeTemplate, useLogger } from "@nuxt/kit";
+import { defineNuxtModule, createResolver, addComponent, addImports, addPlugin, addServerHandler, addServerImports, addTypeTemplate, hasNuxtModule, useLogger } from "@nuxt/kit";
 import { defu } from "defu";
 import { DEFAULT_LOGIN_PATH, DEFAULT_REDIRECT_AFTER_LOGIN, DEFAULT_SESSION_MAX_AGE, DEFAULT_SESSION_NAME, TELEGRAM_OIDC } from "./runtime/shared/defaults";
 import type { RawTelegramConfig } from "./runtime/server/lib/config";
 import { collectConfigWarnings } from "./warnings";
 
-export type { TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser } from "./runtime/shared/types";
+export type { TelegramLoginErrorCode, TelegramProvider, TelegramSession, TelegramSessionResponse, TelegramUser, TelegramWidgetUser } from "./runtime/shared/types";
 export type { TelegramErrorHookContext, TelegramLoginHookContext, TelegramLogoutHookContext, TelegramSessionHookContext } from "./runtime/server/hooks";
 
 export interface ModuleOptions {
@@ -83,7 +83,12 @@ export default defineNuxtModule<ModuleOptions>({
       { nuxt: true, nitro: true },
     );
 
-    addImportsDir(resolver.resolve("./runtime/app/composables"));
+    addImports({ name: "useTelegramSession", from: resolver.resolve("./runtime/app/composables/session") });
+    // nuxt-auth-utils has its own useUserSession; ours would shadow it.
+    if (options.compat?.useUserSession !== false && !hasNuxtModule("nuxt-auth-utils")) {
+      addImports({ name: "useUserSession", from: resolver.resolve("./runtime/app/composables/compat") });
+    }
+    addPlugin(resolver.resolve("./runtime/app/plugins/session"));
 
     addServerImports([
       {

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
 import { readBody } from "h3";
 import TelegramLoginWidget from "../../src/runtime/components/TelegramLoginWidget.vue";
-import { useSessionState } from "../../src/runtime/app/composables/session";
+import { setTelegramSessionState, useTelegramSession } from "../../src/runtime/app/composables/session";
 
 const user = { id: 42, first_name: "Ada", username: "ada", auth_date: 1700000000, hash: "a".repeat(64) };
 
@@ -19,7 +19,7 @@ function callbackName(script: HTMLScriptElement) {
 const callbacks = () => window as unknown as Record<string, ((payload: typeof user) => Promise<void>) | undefined>;
 
 afterEach(() => {
-  useSessionState().value = { loggedIn: false, status: 401 };
+  setTelegramSessionState(null);
 });
 
 describe("TelegramLoginWidget", () => {
@@ -83,7 +83,7 @@ describe("TelegramLoginWidget", () => {
     expect(script.getAttribute("data-auth-url")).toBe("https://example.com/auth");
   });
 
-  it("posts the login to the server, stores the session and emits callback", async () => {
+  it("posts the login to the server, stores the v2 session it returns and emits callback", async () => {
     let posted: unknown;
     registerEndpoint("/api/telegram/session", {
       method: "POST",
@@ -97,7 +97,7 @@ describe("TelegramLoginWidget", () => {
     await callbacks()[callbackName(script)]?.(user);
 
     expect(posted).toEqual(user);
-    expect(useSessionState().value).toMatchObject({ loggedIn: true, first_name: "Ada" });
+    expect(useTelegramSession().user.value).toEqual({ id: 42, first_name: "Ada" });
     expect(wrapper.emitted("callback")?.[0]).toEqual([user]);
   });
 });

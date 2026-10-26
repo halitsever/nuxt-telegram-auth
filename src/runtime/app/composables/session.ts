@@ -1,50 +1,88 @@
-import { computed, type Ref } from "vue";
-import { useAsyncData, useRequestFetch, useState } from "nuxt/app";
-import type { TelegramSessionResponse } from "../../shared/types";
-import type { ITelegramSession, IUserSession } from "../../types/session";
+import { computed, readonly, type ComputedRef, type Ref } from "vue";
+import { useNuxtApp, useRequestFetch, useResponseHeader, useState } from "nuxt/app";
+import type { TelegramSession, TelegramSessionResponse, TelegramUser } from "../../shared/types";
 
 const SESSION_ENDPOINT = "/api/telegram/session";
+const inFlight = new WeakMap<object, Promise<void>>();
 
-const loggedOut = (): ITelegramSession => ({ loggedIn: false, status: 401 });
-
-/** The server answers in the 2.0 shape; this composable still hands out the 1.x one. */
-export function toLegacySession(response: TelegramSessionResponse): ITelegramSession {
-  return response.loggedIn ? { loggedIn: true, status: 200, ...response.user, auth_date: response.loggedInAt } : loggedOut();
+export interface TelegramSessionComposable {
+  session: Readonly<Ref<TelegramSession | null>>;
+  user: ComputedRef<TelegramUser | null>;
+  loggedIn: ComputedRef<boolean>;
+  /** False until the first answer from the server. */
+  ready: Readonly<Ref<boolean>>;
+  fetch: () => Promise<void>;
+  clear: () => Promise<void>;
 }
 
-export const useSessionState = () => useState<ITelegramSession>("telegram-session", loggedOut);
+/** `undefined` until the first answer, so "not loaded yet" and "logged out" stay apart. */
+const useSessionState = () => useState<TelegramSession | null | undefined>("telegram-auth:session", () => undefined);
+const useReadyState = () => useState("telegram-auth:ready", () => false);
 
-async function loadSession(session: Ref<ITelegramSession>, requestFetch: ReturnType<typeof useRequestFetch>) {
-  try {
-    session.value = toLegacySession(await requestFetch<TelegramSessionResponse>(SESSION_ENDPOINT));
-  } catch (err) {
-    session.value = loggedOut();
-    throw err;
-  }
-  return session.value;
+export function setTelegramSessionState(session: TelegramSession | null): void {
+  useSessionState().value = session;
+  useReadyState().value = true;
 }
 
-export function fetchSession(): Promise<ITelegramSession> {
-  const session = useSessionState();
-  return loadSession(session, useRequestFetch()).catch(() => session.value);
+export function toTelegramSession(response: TelegramSessionResponse): TelegramSession | null {
+  if (!response.loggedIn) return null;
+  const { loggedIn: _loggedIn, ...session } = response;
+  return session;
 }
 
-export function useUserSession(): IUserSession {
-  const session = useSessionState();
+function appendSetCookie(header: Ref<string | number | string[] | undefined>, cookies: string[]) {
+  const current = header.value;
+  header.value = [...(Array.isArray(current) ? current : current ? [String(current)] : []), ...cookies];
+}
+
+export function useTelegramSession(): TelegramSessionComposable {
+  const nuxtApp = useNuxtApp();
+  const state = useSessionState();
+  const ready = useReadyState();
   const requestFetch = useRequestFetch();
-  const { status, error, refresh } = useAsyncData("telegram-session-fetch", () => loadSession(session, requestFetch));
+  // During SSR the session endpoint runs inside the page request; cookies it sets (a migrated 1.x login) must reach the browser.
+  const setCookieHeader = import.meta.server ? useResponseHeader("set-cookie") : undefined;
+
+  function fetch(): Promise<void> {
+    let pending = inFlight.get(nuxtApp);
+    if (!pending) {
+      pending = requestFetch<TelegramSessionResponse>(SESSION_ENDPOINT, {
+        onResponse: setCookieHeader
+          ? ({ response }) => {
+              const cookies = response.headers.getSetCookie();
+              if (cookies.length > 0) appendSetCookie(setCookieHeader, cookies);
+            }
+          : undefined,
+      })
+        .then(
+          (response) => {
+            state.value = toTelegramSession(response);
+            ready.value = true;
+          },
+          (error) => {
+            state.value = null;
+            ready.value = true;
+            throw error;
+          },
+        )
+        .finally(() => inFlight.delete(nuxtApp));
+      inFlight.set(nuxtApp, pending);
+    }
+    return pending;
+  }
+
+  async function clear(): Promise<void> {
+    await requestFetch(SESSION_ENDPOINT, { method: "DELETE" });
+    state.value = null;
+    ready.value = true;
+  }
 
   return {
-    session,
-    loading: computed(() => status.value === "pending"),
-    error: computed(() => (error.value ? error.value.message || "Failed to fetch session" : null)),
-    clearSession,
-    refresh,
+    session: computed(() => state.value ?? null),
+    user: computed(() => state.value?.user ?? null),
+    loggedIn: computed(() => !!state.value),
+    ready: readonly(ready),
+    fetch,
+    clear,
   };
-}
-
-export async function clearSession() {
-  const session = useSessionState();
-  await $fetch(SESSION_ENDPOINT, { method: "DELETE" });
-  session.value = loggedOut();
 }

@@ -1,13 +1,12 @@
 <template>
-  <div id="telegram" ref="container" />
+  <div ref="container" />
 </template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useRoute } from "#app";
-import { toLegacySession, useSessionState } from "../app/composables/session";
-import type { TelegramSessionResponse } from "../shared/types";
-import type { ITelegramUser } from "../types/session";
+import { useRoute, useRuntimeConfig } from "#app";
+import { setTelegramSessionState, toTelegramSession } from "../app/composables/session";
+import type { TelegramSessionResponse, TelegramWidgetUser } from "../shared/types";
 
 const props = withDefaults(
   defineProps<{
@@ -34,27 +33,32 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  callback: [user: ITelegramUser];
+  callback: [user: TelegramWidgetUser];
   loaded: [];
 }>();
 
 const container = ref<HTMLDivElement>();
-const session = useSessionState();
 const route = useRoute();
+const telegramAuth = useRuntimeConfig().public.telegramAuth as { clientId?: unknown } | undefined;
 /** The callback lives on window, so its name has to be unique across every Vue app on the page. */
 const callbackName = `__telegramAuth_${Math.random().toString(36).slice(2)}`;
 const callbacks = () => window as unknown as Record<string, unknown>;
 
-async function onTelegramAuth(user: ITelegramUser) {
+async function onTelegramAuth(user: TelegramWidgetUser) {
   try {
-    session.value = toLegacySession(await $fetch<TelegramSessionResponse>("/api/telegram/session", { method: "POST", body: user }));
+    setTelegramSessionState(toTelegramSession(await $fetch<TelegramSessionResponse>("/api/telegram/session", { method: "POST", body: user })));
   } catch {
-    session.value = { loggedIn: false, status: 401 };
+    setTelegramSessionState(null);
   }
   emit("callback", user);
 }
 
 onMounted(() => {
+  // Once a bot moves to Telegram Login, Telegram answers this widget with "Bot domain invalid" on every domain.
+  if (import.meta.dev && telegramAuth?.clientId) {
+    console.warn("[nuxt-telegram-auth] Bots set up for Telegram Login (OIDC) can't use the legacy widget. Use `<TelegramLoginButton>` instead.");
+  }
+
   const script = document.createElement("script");
   script.async = true;
   script.src = "https://telegram.org/js/telegram-widget.js?22";

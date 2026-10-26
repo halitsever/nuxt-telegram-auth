@@ -13,6 +13,17 @@ export interface TelegramUser {
 
 export type TelegramProvider = "oidc" | "sdk" | "legacy" | "miniapp";
 
+/** What the legacy widget passes to its callback: Telegram's signed login data. */
+export interface TelegramWidgetUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+  hash: string;
+}
+
 export interface TelegramSession {
   user: TelegramUser;
   provider: TelegramProvider;
