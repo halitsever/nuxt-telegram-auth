@@ -8,7 +8,13 @@
 <br>
 <br/>
 <br/>
-<img src="https://img.shields.io/github/sponsors/halitsever"/>
+<a href="https://www.npmjs.com/package/nuxt-telegram-auth"><img alt="npm version" src="https://img.shields.io/npm/v/nuxt-telegram-auth"/></a>
+<a href="https://www.npmjs.com/package/nuxt-telegram-auth"><img alt="npm downloads" src="https://img.shields.io/npm/d18m/nuxt-telegram-auth?label=downloads"/></a>
+<a href="https://www.npmjs.com/package/nuxt-telegram-auth"><img alt="npm monthly downloads" src="https://img.shields.io/npm/dm/nuxt-telegram-auth"/></a>
+<a href="https://github.com/halitsever/nuxt-telegram-auth/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/halitsever/nuxt-telegram-auth/ci.yml?branch=main"/></a>
+<a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/halitsever/nuxt-telegram-auth"/></a>
+<a href="https://nuxt.com"><img alt="Nuxt version" src="https://img.shields.io/npm/dependency-version/nuxt-telegram-auth/peer/nuxt?logo=nuxt&logoColor=white&color=00DC82"/></a>
+<a href="https://github.com/sponsors/halitsever"><img alt="GitHub sponsors" src="https://img.shields.io/github/sponsors/halitsever"/></a>
 </p>
 <p align="center">
 <a align="center" href="https://halitsever.github.io/nuxt-telegram-auth">Documentation</a>
