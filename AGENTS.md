@@ -17,7 +17,6 @@ Use the pnpm version pinned in `packageManager` (`corepack enable`) and Node 24 
 ## Gotchas
 
 - `test/unit/workflows.test.ts` runs `bash -n` on every `run:` script in `.github/workflows`, so `pnpm test` also catches a broken workflow edit.
-- CONTRIBUTING.md still says 2.x work happens on a `v2` branch. 2.0.0 is released and only `main` exists, so open PRs against `main`.
 - There is no format check in CI and no pre-commit hook. Run `npx prettier --write` on the files you touch (printWidth 220, double quotes).
 - Dependency overrides live in `pnpm-workspace.yaml`, not in package.json.
 - Trying a real bot needs `playground/.env` (copy `.env.example`) and an HTTPS tunnel listed in the bot's Allowed URLs. CONTRIBUTING.md has the steps.
