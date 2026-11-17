@@ -1,10 +1,10 @@
 <p align="center" class="logo-section">
-<img src="https://i.ibb.co/MMcBdPN/nuxt-telegram-auth.png" height="80" width="80"/>
+<img src="https://i.ibb.co/MMcBdPN/nuxt-telegram-auth.png" height="80" width="80" alt="nuxt-telegram-auth logo"/>
 </br>
 <img src="https://halitsever-api.vercel.app/api/repo-title?title=Nuxt%20Telegram%20Auth">
 
 <p align="center">
-🔐 Telegram Login for Nuxt
+🔐 Telegram Login for Nuxt. Log in with a popup button or the OpenID Connect redirect, with the session checked and sealed on the server.
 <br>
 <br/>
 <br/>
@@ -66,6 +66,11 @@ See the [documentation](https://halitsever.github.io/nuxt-telegram-auth) for the
 
 <p align="center" href="https://github.com/halitsever/nuxt-telegram-auth/issues">
 <img src="https://halitsever-api.vercel.app/api/issue"/>
+</p>
+
+<p align="center">
+Found a bug or have an idea? Open an <a href="https://github.com/halitsever/nuxt-telegram-auth/issues">issue</a>.<br/>
+Read the <a href="CONTRIBUTING.md">contributing guide</a> before sending a pull request.
 </p>
 
 <p align="center">

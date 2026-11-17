@@ -1,3 +1,7 @@
+---
+description: "Upgrade nuxt-telegram-auth from 1.x to 2.0 and move from the legacy login widget to Telegram Login."
+---
+
 # Migrating from 1.x
 
 2.0 adds Telegram Login and moves every login to one sealed session. Most of the move is mechanical; logged-in users stay logged in.

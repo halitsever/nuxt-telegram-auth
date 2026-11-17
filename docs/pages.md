@@ -1,3 +1,7 @@
+---
+description: "Protect Nuxt pages behind Telegram login with definePageMeta({ telegramAuth: true }) and its options."
+---
+
 # Page protection
 
 Mark pages with `definePageMeta`:

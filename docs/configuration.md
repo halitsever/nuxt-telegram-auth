@@ -1,3 +1,7 @@
+---
+description: "Environment variables, module options and server routes of the nuxt-telegram-auth Nuxt module."
+---
+
 # Configuration
 
 ## Environment
