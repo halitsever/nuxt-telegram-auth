@@ -48,4 +48,4 @@ Use [Conventional Commits](https://www.conventionalcommits.org) (`fix:`, `feat:`
 
 Releases run from the **release** workflow in GitHub Actions. Start it with `dry_run` checked first. A real run bumps the version, updates the changelog, publishes to npm with provenance and creates the GitHub release.
 
-Until 2.0 is out, 2.x work happens on the `v2` branch and pull requests go there. Betas are released from `v2` with bump `premajor` for the first one and `prerelease` after that, under the npm tag `next`. The workflow refuses other combinations on `v2`, and never publishes a prerelease as `latest`.
+Work happens on `main`, and pull requests go there. Releases from `main` go out under the npm tag `latest`, and the workflow never publishes a prerelease as `latest`.
