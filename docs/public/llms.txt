@@ -1,0 +1,23 @@
+# nuxt-telegram-auth
+
+> Nuxt module for Telegram Login on Nuxt 4.6 or newer. Users log in through a popup button or the OpenID Connect redirect. The server verifies Telegram's id_token and keeps the session in a sealed, HttpOnly cookie, with no database.
+
+Install with `npx nuxi module add nuxt-telegram-auth`. Set `NUXT_PUBLIC_TELEGRAM_AUTH_CLIENT_ID` and a session secret `NUXT_APP_SECRET` (at least 32 characters), and turn on Telegram Login for the bot in the BotFather Mini App. New apps use `<TelegramLoginButton>` and `useTelegramSession()`. `<TelegramLoginWidget>` is the legacy widget for bots that have not switched to Telegram Login.
+
+## Docs
+
+- [Home](https://halitsever.github.io/nuxt-telegram-auth/): overview and features
+- [Quickstart](https://halitsever.github.io/nuxt-telegram-auth/installation.html): install, session secret, BotFather setup and a login button
+- [Telegram Login](https://halitsever.github.io/nuxt-telegram-auth/telegram-login.html): popup and redirect login, allowed URLs, errors and nuxt-security
+- [Sessions and hooks](https://halitsever.github.io/nuxt-telegram-auth/sessions.html): useTelegramSession(), server utilities, hooks and the session cookie
+- [Page protection](https://halitsever.github.io/nuxt-telegram-auth/pages.html): definePageMeta({ telegramAuth: true }) and its options
+- [Configuration](https://halitsever.github.io/nuxt-telegram-auth/configuration.html): environment variables, module options and routes
+- [Login widget (legacy)](https://halitsever.github.io/nuxt-telegram-auth/properties.html): the old TelegramLoginWidget component
+- [Redirect mode (legacy widget)](https://halitsever.github.io/nuxt-telegram-auth/redirect-mode.html): redirect mode of the old widget
+- [Migrating from 1.x](https://halitsever.github.io/nuxt-telegram-auth/migration.html): upgrading to 2.0 and moving to Telegram Login
+
+## Optional
+
+- [Source](https://github.com/halitsever/nuxt-telegram-auth): repository
+- [npm](https://www.npmjs.com/package/nuxt-telegram-auth): package page
+- [Changelog](https://github.com/halitsever/nuxt-telegram-auth/blob/main/CHANGELOG.md): release notes
