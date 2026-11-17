@@ -1,3 +1,7 @@
+---
+description: "Redirect mode of the legacy Telegram login widget in Nuxt, with your own handler and its limits."
+---
+
 # Redirect mode (legacy widget)
 
 This page is about the old [login widget](/properties). For Telegram Login, see its [redirect login](/telegram-login#redirect-login).

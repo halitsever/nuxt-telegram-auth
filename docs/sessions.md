@@ -1,3 +1,7 @@
+---
+description: "Read the Telegram session in Nuxt with useTelegramSession(), use the server utilities and hooks, and configure the sealed session cookie."
+---
+
 # Sessions and hooks
 
 Every login method ends in the same session. It lives in a sealed, HttpOnly cookie called `nuxt-telegram-auth`, so no database is needed and scripts on the page can't read it.

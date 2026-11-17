@@ -1,3 +1,7 @@
+---
+description: "Install nuxt-telegram-auth, set a session secret, turn on Telegram Login in BotFather and add a login button to your Nuxt app."
+---
+
 # Quickstart
 
 This module logs people in with their Telegram account. It needs Nuxt 4.6 or newer and a Telegram bot. If you don't have a bot yet, create one with [@BotFather](https://core.telegram.org/bots#how-do-i-create-a-bot).
