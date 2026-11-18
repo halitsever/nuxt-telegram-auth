@@ -1,10 +1,13 @@
 ---
 layout: home
+title: "Nuxt Telegram Auth: Telegram login widget and OAuth for Nuxt"
+titleTemplate: false
+description: "Nuxt auth module for Telegram login. Add the Telegram login widget or button, or the OAuth (OpenID Connect) redirect, with the session checked and sealed on the server."
 
 hero:
   name: "Nuxt Telegram Auth"
-  text: "Log in with Telegram"
-  tagline: Telegram Login for Nuxt, with the session checked and sealed on the server.
+  text: "Telegram login for Nuxt"
+  tagline: Telegram's login widget and OAuth redirect in your Nuxt app, with the session checked and sealed on the server.
   actions:
     - theme: brand
       text: Get Started

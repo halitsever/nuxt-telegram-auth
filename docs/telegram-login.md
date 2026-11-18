@@ -1,10 +1,10 @@
 ---
-description: "Log in with Telegram in Nuxt through the popup button or the OpenID Connect redirect, with allowed URLs, errors and nuxt-security setup."
+description: "Telegram OAuth login in Nuxt through the popup button or the OpenID Connect redirect, with allowed URLs, errors and nuxt-security setup."
 ---
 
-# Telegram Login
+# Telegram Login with OAuth and OpenID Connect
 
-Telegram Login is Telegram's current way to log in with a Telegram account. It is built on OpenID Connect: Telegram hands your site a signed `id_token`, and the server checks it against Telegram's public keys before it creates a session. The module supports both ways to start a login:
+Telegram Login is Telegram's current way to log in with a Telegram account. It is an OAuth 2.0 flow with OpenID Connect on top: Telegram hands your site a signed `id_token`, and the server checks it against Telegram's public keys before it creates a session. The module supports both ways to start a login:
 
 - **Popup**: `<TelegramLoginButton>` or `useTelegramLogin()` open Telegram's login window over your page.
 - **Redirect**: the browser goes to Telegram and comes back to `/auth/telegram/callback`. No JavaScript SDK is involved, and it needs the client secret.

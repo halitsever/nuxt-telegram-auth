@@ -4,7 +4,7 @@
 <img src="https://halitsever-api.vercel.app/api/repo-title?title=Nuxt%20Telegram%20Auth">
 
 <p align="center">
-🔐 Telegram Login for Nuxt. Log in with a popup button or the OpenID Connect redirect, with the session checked and sealed on the server.
+🔐 Telegram login for Nuxt. A Nuxt auth module with Telegram's login widget, a popup button and the OAuth (OpenID Connect) redirect, with the session checked and sealed on the server.
 <br>
 <br/>
 <br/>

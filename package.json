@@ -1,13 +1,16 @@
 {
   "name": "nuxt-telegram-auth",
   "version": "2.0.0",
-  "description": "Telegram Login for Nuxt. A Nuxt module with a login button, OpenID Connect redirect and sealed session cookies checked on the server.",
+  "description": "Telegram login for Nuxt. A Nuxt auth module with the Telegram login widget, a login button, OAuth (OpenID Connect) redirect and sealed session cookies checked on the server.",
   "keywords": [
     "nuxt",
     "nuxt-module",
     "telegram",
     "telegram-login",
     "login-widget",
+    "telegram-login-widget",
+    "telegram-oauth",
+    "oauth",
     "auth",
     "authentication",
     "telegram-auth",

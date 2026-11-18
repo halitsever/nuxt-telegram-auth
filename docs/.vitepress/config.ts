@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 
 const siteUrl = "https://halitsever.github.io/nuxt-telegram-auth/";
 const title = "Nuxt Telegram Auth";
-const description = "Telegram Login for Nuxt, with sessions checked and sealed on the server.";
+const description = "Telegram login for Nuxt: the login button, the OAuth redirect and the classic login widget, with sessions checked and sealed on the server.";
 
 const jsonLd = {
   "@context": "https://schema.org",
