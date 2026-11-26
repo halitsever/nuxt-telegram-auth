@@ -4,7 +4,7 @@
 <img src="https://halitsever-api.vercel.app/api/repo-title?title=Nuxt%20Telegram%20Auth">
 
 <p align="center">
-🔐 Telegram login for Nuxt. A Nuxt auth module with Telegram's login widget, a popup button and the OAuth (OpenID Connect) redirect, with the session checked and sealed on the server.
+Telegram login for Nuxt. A Nuxt auth module with Telegram's login widget, a popup button and the OAuth (OpenID Connect) redirect, with the session checked and sealed on the server.
 <br>
 <br/>
 <br/>
@@ -25,10 +25,10 @@
 <img src="https://halitsever-api.vercel.app/api/details"/>
 </p>
 
-- 😌 [**Telegram Login**](#) - A popup button or the OpenID Connect redirect, checked on the server
-- 🔒 [**Sealed Sessions**](#) - One HttpOnly session cookie for every login method, no database needed
-- 🛡️ [**Pages and Routes**](#) - `definePageMeta({ telegramAuth: true })` for pages, `requireTelegramSession(event)` for your API
-- 🪝 [**Hooks**](#) - Save users, add roles or refuse a login from a server hook
+- [**Telegram Login**](#) - A popup button or the OpenID Connect redirect, checked on the server
+- [**Sealed Sessions**](#) - One HttpOnly session cookie for every login method, no database needed
+- [**Pages and Routes**](#) - `definePageMeta({ telegramAuth: true })` for pages, `requireTelegramSession(event)` for your API
+- [**Hooks**](#) - Save users, add roles or refuse a login from a server hook
   <p align="center" >
   <img src="https://halitsever-api.vercel.app/api/installation"/>
   </p>
