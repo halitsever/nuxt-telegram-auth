@@ -17,7 +17,7 @@ Telegram login for Nuxt. A Nuxt auth module with Telegram's login widget, a popu
 <a href="https://github.com/sponsors/halitsever"><img alt="GitHub sponsors" src="https://img.shields.io/github/sponsors/halitsever"/></a>
 </p>
 <p align="center">
-<a align="center" href="https://halitsever.github.io/nuxt-telegram-auth">Documentation</a>
+<a align="center" href="https://projects.halit.org/nuxt-telegram-auth">Documentation</a>
   </p>
 </p>
 
@@ -62,7 +62,7 @@ const { user, loggedIn, clear } = useTelegramSession();
 </script>
 ```
 
-See the [documentation](https://halitsever.github.io/nuxt-telegram-auth) for the redirect login, hooks, page protection, the classic login widget and upgrading from 1.x.
+See the [documentation](https://projects.halit.org/nuxt-telegram-auth) for the redirect login, hooks, page protection, the classic login widget and upgrading from 1.x.
 
 <p align="center" href="https://github.com/halitsever/nuxt-telegram-auth/issues">
 <img src="https://halitsever-api.vercel.app/api/issue"/>

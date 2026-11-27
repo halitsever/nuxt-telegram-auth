@@ -1,6 +1,6 @@
 import { defineConfig } from "vitepress";
 
-const siteUrl = "https://halitsever.github.io/nuxt-telegram-auth/";
+const siteUrl = "https://projects.halit.org/nuxt-telegram-auth/";
 const title = "Nuxt Telegram Auth";
 const description = "Telegram login for Nuxt: the login button, the OAuth redirect and the classic login widget, with sessions checked and sealed on the server.";
 
@@ -30,7 +30,7 @@ export default defineConfig({
   sitemap: { hostname: siteUrl },
 
   head: [
-    /** Cloudflare Web Analytics, one token for every page on halitsever.github.io. */
+    /** Cloudflare Web Analytics, one token for every page on projects.halit.org. */
     ["script", { defer: "", src: "https://static.cloudflareinsights.com/beacon.min.js", "data-cf-beacon": '{"token": "dd7e54d3f48841c187d72d9dbb92a6b6"}' }],
     ["meta", { property: "og:type", content: "website" }],
     ["meta", { property: "og:title", content: title }],

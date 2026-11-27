@@ -6,15 +6,15 @@ Install with `npx nuxi module add nuxt-telegram-auth`. Set `NUXT_PUBLIC_TELEGRAM
 
 ## Docs
 
-- [Home](https://halitsever.github.io/nuxt-telegram-auth/): overview and features
-- [Quickstart](https://halitsever.github.io/nuxt-telegram-auth/installation.html): install, session secret, BotFather setup and a login button
-- [Telegram Login](https://halitsever.github.io/nuxt-telegram-auth/telegram-login.html): Telegram OAuth with popup and redirect login, allowed URLs, errors and nuxt-security
-- [Sessions and hooks](https://halitsever.github.io/nuxt-telegram-auth/sessions.html): useTelegramSession(), server utilities, hooks and the session cookie
-- [Page protection](https://halitsever.github.io/nuxt-telegram-auth/pages.html): definePageMeta({ telegramAuth: true }) and its options
-- [Configuration](https://halitsever.github.io/nuxt-telegram-auth/configuration.html): environment variables, module options and routes
-- [Telegram Login Widget (legacy)](https://halitsever.github.io/nuxt-telegram-auth/properties.html): the old TelegramLoginWidget component
-- [Redirect mode (legacy widget)](https://halitsever.github.io/nuxt-telegram-auth/redirect-mode.html): redirect mode of the old widget
-- [Migrating from 1.x](https://halitsever.github.io/nuxt-telegram-auth/migration.html): upgrading to 2.0 and moving to Telegram Login
+- [Home](https://projects.halit.org/nuxt-telegram-auth/): overview and features
+- [Quickstart](https://projects.halit.org/nuxt-telegram-auth/installation.html): install, session secret, BotFather setup and a login button
+- [Telegram Login](https://projects.halit.org/nuxt-telegram-auth/telegram-login.html): Telegram OAuth with popup and redirect login, allowed URLs, errors and nuxt-security
+- [Sessions and hooks](https://projects.halit.org/nuxt-telegram-auth/sessions.html): useTelegramSession(), server utilities, hooks and the session cookie
+- [Page protection](https://projects.halit.org/nuxt-telegram-auth/pages.html): definePageMeta({ telegramAuth: true }) and its options
+- [Configuration](https://projects.halit.org/nuxt-telegram-auth/configuration.html): environment variables, module options and routes
+- [Telegram Login Widget (legacy)](https://projects.halit.org/nuxt-telegram-auth/properties.html): the old TelegramLoginWidget component
+- [Redirect mode (legacy widget)](https://projects.halit.org/nuxt-telegram-auth/redirect-mode.html): redirect mode of the old widget
+- [Migrating from 1.x](https://projects.halit.org/nuxt-telegram-auth/migration.html): upgrading to 2.0 and moving to Telegram Login
 
 ## Optional
 
