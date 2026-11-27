@@ -19,6 +19,8 @@ const jsonLd = {
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  /** keeps the page hash map out of every page's HTML, which Semrush reads as a low text-to-HTML ratio */
+  metaChunk: true,
   lang: "en-US",
   title,
   description,
