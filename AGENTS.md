@@ -24,7 +24,7 @@ Use the pnpm version pinned in `packageManager` (`corepack enable`) and Node 24 
 
 ## Docs site
 
-- VitePress source lives in `docs/`, with the config in `docs/.vitepress/config.ts` and base `/nuxt-telegram-auth/`. It is served at https://halitsever.github.io/nuxt-telegram-auth/ with `.html` page URLs.
+- VitePress source lives in `docs/`, with the config in `docs/.vitepress/config.ts` and base `/nuxt-telegram-auth/`. It is served at https://projects.halit.org/nuxt-telegram-auth/ with `.html` page URLs.
 - `.github/workflows/docs.yaml` deploys on pushes to `main` that touch `docs/**`.
 - A new page needs a `description` line in its frontmatter, a sidebar entry in the config and a line in `docs/public/llms.txt`. The sitemap, canonical and `og:url` tags are generated.
 

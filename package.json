@@ -20,7 +20,7 @@
     "nuxt-auth",
     "nuxt4"
   ],
-  "homepage": "https://halitsever.github.io/nuxt-telegram-auth/",
+  "homepage": "https://projects.halit.org/nuxt-telegram-auth/",
   "bugs": "https://github.com/halitsever/nuxt-telegram-auth/issues",
   "repository": {
     "type": "git",
