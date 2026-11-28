@@ -121,4 +121,5 @@ No. Route middleware only guards page navigation. Each server route that returns
 - [Nuxt auth in 2026: the main modules compared](/blog/nuxt-authentication-options)
 - [Sealed cookies or JWTs for Nuxt sessions](/blog/nuxt-sealed-cookies-vs-jwt)
 - [Saving Telegram users to a database when they log in](/blog/telegram-login-save-users)
+- [SameSite cookies in practice: what Lax, Strict and None send](/blog/samesite-cookie-lax)
 - [All posts](/blog/)

@@ -101,4 +101,5 @@ The [sessions and hooks reference](/sessions) has the full types.
 - [Nuxt auth middleware: protecting pages and server routes](/blog/nuxt-auth-middleware)
 - [Sealed cookies or JWTs for Nuxt sessions](/blog/nuxt-sealed-cookies-vs-jwt)
 - [Verifying a Telegram login on the server](/blog/telegram-login-verification)
+- [Getting a Telegram user ID in your app, and storing it safely](/blog/telegram-user-id)
 - [All posts](/blog/)
