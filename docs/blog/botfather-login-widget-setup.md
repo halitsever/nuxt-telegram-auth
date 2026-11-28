@@ -29,7 +29,7 @@ faq:
 
 If you do not have a bot yet, open [@BotFather](https://t.me/BotFather) and send `/newbot`. Telegram's [BotFather documentation](https://core.telegram.org/bots/features#botfather) says it asks for a name and a username, then generates the bot's token. The username must end in `bot`, is 5 to 32 characters long, and cannot be changed later. Telegram recommends that the bot's name and picture match your site, because users see them on the login screen.
 
-The token looks like `110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw`. Keep it secret: anyone with it controls the bot. If it leaks, `/token` generates a new one.
+The token looks like `110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw`. Keep it secret: anyone with it controls the bot. If it leaks, `/token` generates a new one. The [Telegram bot token guide](https://projects.halit.org/advanced-telegram-economy/blog/telegram-bot-token.html) covers testing it with `getMe`, keeping it out of your code and replacing a leaked one.
 
 ## 2. Open Login Widget in the BotFather Mini App
 
