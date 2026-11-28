@@ -2,7 +2,7 @@
 layout: home
 title: "Nuxt Telegram Auth: Telegram login widget and OAuth for Nuxt"
 titleTemplate: false
-description: "Nuxt auth module for Telegram login. Add the Telegram login widget or button, or the OAuth (OpenID Connect) redirect, with the session checked and sealed on the server."
+description: "Nuxt auth module for Telegram login: the Telegram login widget or button, or the OAuth (OpenID Connect) redirect, with the session sealed on the server."
 
 hero:
   name: "Nuxt Telegram Auth"
@@ -74,3 +74,5 @@ The browser never decides who is logged in. Only data that passed the server che
 - [Sessions and hooks](/sessions): read the session and react to logins on the server.
 - [Page protection](/pages): keep pages for logged-in users only.
 - [Migrating from 1.x](/migration): move an existing app and its users to 2.0.
+- [Telegram login widget generator](/telegram-login-widget/): pick the button options and copy the code.
+- [Blog](/blog/): guides to Telegram Mini Apps, Nuxt auth modules, middleware, sessions and BotFather.
