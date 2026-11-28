@@ -1,10 +1,11 @@
 ---
-description: "Use the legacy Telegram login widget in Nuxt with the TelegramLoginWidget component."
+title: "Legacy Widget Options"
+description: "Props and events of TelegramLoginWidget, the legacy Telegram widget component for Nuxt: bot username, size, radius, user photo, write access and redirect."
 ---
 
-# Telegram Login Widget (legacy)
+# TelegramLoginWidget: legacy widget options
 
-`<TelegramLoginWidget>` renders Telegram's old login widget. It keeps working for bots that haven't turned on [Telegram Login](/telegram-login). Once a bot does, Telegram shows "Bot domain invalid" in this widget on every domain, so plan the [move](/migration#moving-to-telegram-login).
+`<TelegramLoginWidget>` renders Telegram's old login widget. It keeps working for bots that haven't turned on [Telegram Login](/telegram-login). Once a bot does, Telegram shows "Bot domain invalid" in this widget on every domain, so plan the [move](/migration#moving-to-telegram-login). For a new bot, the [Telegram login widget generator](/telegram-login-widget/) writes the code for the current `<TelegramLoginButton>`.
 
 The widget needs the bot token and your domain set with `/setdomain` in [@BotFather](https://t.me/BotFather):
 
