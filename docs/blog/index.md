@@ -1,7 +1,7 @@
 ---
 title: "Telegram Login and Nuxt Auth Guides"
 titleTemplate: false
-description: "Guides to Telegram login in Nuxt: Mini Apps vs the login widget, Nuxt auth modules, page middleware, sealed cookies vs JWT, verification and BotFather."
+description: "Guides to Telegram login in Nuxt and web auth: Nuxt auth modules, middleware, PKCE, JWKS, ID tokens, HttpOnly and SameSite cookies, and Telegram user IDs."
 ---
 
 # Nuxt and Telegram login guides
@@ -39,3 +39,27 @@ Use nuxt-telegram-auth's server hooks to save Telegram users to your database, a
 ## [BotFather setup for Telegram Login: Allowed URLs and client ID](/blog/botfather-login-widget-setup)
 
 Step by step BotFather setup for Telegram Login: create the bot, open Login Widget, add Allowed URLs, copy the Client ID and Secret, and pick a signing key.
+
+## [PKCE in plain terms: the verifier, the challenge and why they exist](/blog/what-is-pkce)
+
+What PKCE is and how the code_verifier and S256 code_challenge protect the OAuth code flow, checked against RFC 7636's test vector, using Telegram Login.
+
+## [What a JWKS is and how servers use it to verify JWTs](/blog/what-is-jwks)
+
+What a JSON Web Key Set is, how a jwks_uri and kid let you verify a JWT, what Telegram's JWKS endpoint contains, and how to verify a token with jose in Node.js.
+
+## [HttpOnly cookies, tested: hidden from scripts, still sent with requests](/blog/httponly-cookie)
+
+What the HttpOnly cookie attribute does, a Chrome test of document.cookie with and without it, what it does not stop, and how a Nuxt session cookie uses it.
+
+## [SameSite cookies in practice: what Lax, Strict and None send](/blog/samesite-cookie-lax)
+
+What SameSite=Lax, Strict and None do, tested in Chrome with links, forms, iframes and images, and why OAuth logins break when the state cookie is Strict.
+
+## [ID token or access token: what each one is for in OpenID Connect](/blog/id-token-vs-access-token)
+
+How an ID token differs from an access token in OAuth 2.0 and OpenID Connect, which one proves who logged in, and why Telegram Login only needs the ID token.
+
+## [Getting a Telegram user ID in your app, and storing it safely](/blog/telegram-user-id)
+
+What a Telegram user ID is, how to get it from a bot update, Telegram Login or the old widget, why sub differs, and why JavaScript can store it as a Number.

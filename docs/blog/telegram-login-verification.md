@@ -67,4 +67,6 @@ Only data that passed these checks reaches the `telegram-auth:login` hook and th
 - [Telegram Mini Apps and the login widget: which one signs users in](/blog/telegram-mini-app-vs-login-widget)
 - [Sealed cookies or JWTs for Nuxt sessions](/blog/nuxt-sealed-cookies-vs-jwt)
 - [BotFather setup for Telegram Login: Allowed URLs and client ID](/blog/botfather-login-widget-setup)
+- [PKCE in plain terms: the verifier, the challenge and why they exist](/blog/what-is-pkce)
+- [What a JWKS is and how servers use it to verify JWTs](/blog/what-is-jwks)
 - [All posts](/blog/)

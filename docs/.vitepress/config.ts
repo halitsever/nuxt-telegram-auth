@@ -124,6 +124,12 @@ export default defineConfig({
             { text: "Login verification", link: "/blog/telegram-login-verification" },
             { text: "Save users on login", link: "/blog/telegram-login-save-users" },
             { text: "BotFather setup", link: "/blog/botfather-login-widget-setup" },
+            { text: "What is PKCE", link: "/blog/what-is-pkce" },
+            { text: "JWKS explained", link: "/blog/what-is-jwks" },
+            { text: "HttpOnly cookies", link: "/blog/httponly-cookie" },
+            { text: "SameSite Lax vs Strict", link: "/blog/samesite-cookie-lax" },
+            { text: "ID token vs access token", link: "/blog/id-token-vs-access-token" },
+            { text: "Telegram user ID", link: "/blog/telegram-user-id" },
           ],
         },
         {

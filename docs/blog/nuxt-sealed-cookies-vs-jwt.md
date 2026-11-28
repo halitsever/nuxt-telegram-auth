@@ -74,4 +74,6 @@ No. The id_token is checked once on the server and thrown away. The cookie holds
 - [nuxt-auth-utils or nuxt-telegram-auth: what each module does](/blog/nuxt-auth-utils-vs-nuxt-telegram-auth)
 - [Nuxt auth middleware: protecting pages and server routes](/blog/nuxt-auth-middleware)
 - [Verifying a Telegram login on the server](/blog/telegram-login-verification)
+- [HttpOnly cookies, tested: hidden from scripts, still sent with requests](/blog/httponly-cookie)
+- [ID token or access token: what each one is for in OpenID Connect](/blog/id-token-vs-access-token)
 - [All posts](/blog/)
